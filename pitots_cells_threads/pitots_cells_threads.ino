@@ -48,12 +48,12 @@ public:
       Celula_TraseiraDireita.tareNoDelay();
       Celula_TraseiraEsquerda.tareNoDelay();
     }
-    
+
     //check if last tare operation is complete
 
     if (Celula_Horizontal.getTareStatus() == true) {
       Serial.println("Celula Horizontal tarada");
-    }    
+    }
     if (Celula_FrontalDireita.getTareStatus() == true) {
       Serial.println("Celula Frontal Direita tarada");
     }
@@ -74,7 +74,7 @@ public:
     Celula_FrontalEsquerda.begin();
     Celula_TraseiraDireita.begin();
     Celula_TraseiraEsquerda.begin();
-  
+
     long calibrationTime = 5000; // tare preciscion can be improved by adding a few seconds of stabilising time
 
     byte Celula_Horizontal_ready = 0;
@@ -100,7 +100,7 @@ public:
     Celula_TraseiraEsquerda.setCalFactor(744.0); // user set calibration factor (float)
     Serial.println("Startup + tare is complete");
   }
-  
+
   void run(){
     // Update data on cells
     Celula_Horizontal.update();
@@ -115,11 +115,11 @@ public:
     forca_frontal_esquerda = Celula_FrontalEsquerda.getData();
     forca_traseira_direita = Celula_TraseiraDireita.getData();
     forca_traseira_esquerda = Celula_TraseiraEsquerda.getData();
-  
+
     if (Serial.available() > 0) {
       inByte = Serial.read();
     }
-    
+
     runned();
   }
 };
@@ -138,7 +138,7 @@ void setup(){
   pitot1.adc_port = 1;
   pitot2.adc_port = 2;
   pitot3.adc_port = 3;
-  
+
   pitot0.setInterval(1);
   pitot1.setInterval(1);
   pitot2.setInterval(1);
@@ -159,10 +159,10 @@ void setup(){
 void loop(){
 
   controller.run();
-  
+
   Serial.print(1000*pitot0.Voltage);
   Serial.print("\t");
-  
+
   Serial.print(1000*pitot1.Voltage);
   Serial.print("\t");
 
@@ -177,13 +177,13 @@ void loop(){
 //
 //  Serial.print(celulas_bancada.forca_frontal_direita);
 //  Serial.print("\t");
-//  
+//
 //  Serial.print(celulas_bancada.forca_frontal_esquerda);
 //  Serial.print("\t");
-//  
+//
 //  Serial.print(celulas_bancada.forca_traseira_direita);
 //  Serial.print("\t");
-//  
+//
 //  Serial.print(celulas_bancada.forca_traseira_esquerda);
 //  Serial.print("\t");
 
