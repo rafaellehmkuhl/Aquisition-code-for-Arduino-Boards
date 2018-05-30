@@ -20,6 +20,10 @@ const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
 
+boolean print_pitots = false;
+boolean print_cells = false;
+boolean send_outside = false;
+
 class PitotThread: public Thread
 {
 public:
@@ -142,20 +146,36 @@ void loop(){
 
   controller.run();
 
-  // printPitots();
-  printCells();
-  // printPitotAndCells();
+  if (print_pitots){
+    printPitots();
+  }
+
+  if (print_cells){
+    printCells();
+  }
+
   Serial.println();
 
-  // sendDataViaProtocol();
+  if (send_outside){
+    sendDataViaProtocol();
+  }
 
   receiveCommands();
   interpretCommands();
 }
 
 void interpretCommands(){
-  if (receivedChars == '!tare@') {
+  if (receivedChars == '!tare_cells@') {
     celulas_bancada.tareCells();
+  }
+  if (receivedChars == '!print_pitots@') {
+    print_pitots = !print_pitots;
+  }
+  if (receivedChars == '!print_cells@') {
+    print_cells = !print_cells;
+  }
+  if (receivedChars == '!send_outside@') {
+    send_outside = !send_outside;
   }
 }
 
@@ -179,11 +199,6 @@ void printCells(){
 void printTabbed(float value){
   Serial.print(value);
   Serial.print("\t");
-}
-
-void printPitotAndCells(){
-  printPitots();
-  printCells();
 }
 
 void sendDataViaProtocol(){
