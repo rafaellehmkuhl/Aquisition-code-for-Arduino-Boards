@@ -85,24 +85,6 @@ public:
       Celula_FrontalEsquerda.tareNoDelay();
       Celula_TraseiraDireita.tareNoDelay();
       Celula_TraseiraEsquerda.tareNoDelay();
-
-    // check if tare operations are complete
-
-    if (Celula_Horizontal.getTareStatus() == true) {
-      Serial.println("Celula Horizontal tarada");
-    }
-    if (Celula_FrontalDireita.getTareStatus() == true) {
-      Serial.println("Celula Frontal Direita tarada");
-    }
-    if (Celula_FrontalEsquerda.getTareStatus() == true) {
-      Serial.println("Celula Frontal Esquerda tarada");
-    }
-    if (Celula_TraseiraDireita.getTareStatus() == true) {
-      Serial.println("Celula Traseira Direita tarada");
-    }
-    if (Celula_TraseiraEsquerda.getTareStatus() == true) {
-      Serial.println("Celula Traseira Esquerda tarada");
-    }
   }
 
   void run(){
