@@ -16,7 +16,9 @@ HX711_ADC Celula_FrontalEsquerda(7, 8);
 HX711_ADC Celula_TraseiraDireita(9, 10);
 HX711_ADC Celula_TraseiraEsquerda(11, 12);
 
-char inByte;
+const byte numChars = 32;
+char receivedChars[numChars];
+boolean newData = false;
 
 class PitotThread: public Thread
 {
@@ -163,14 +165,15 @@ void loop(){
   // printPitotAndCells();
   Serial.println();
 
-  if (Serial.available() > 0) {
-    inByte = Serial.read();
-    if (inByte == 't'){
-      celulas_bancada.tareCells();
-    }
-  }
+  receiveCommands();
+  interpretCommands();
 }
 
+void interpretCommands(){
+  if (receivedChars == '!tare@') {
+    celulas_bancada.tareCells();
+  }
+}
 
 
 void printPitots(){
@@ -249,4 +252,36 @@ void sendViaProtocol(){
   Serial.print(";");
 
   Serial.println("@");
+}
+
+void receiveCommands() {
+  static boolean recvInProgress = false;
+  static byte ndx = 0;
+  char startMarker = '!';
+  char endMarker = '@';
+  char rc;
+
+  while (Serial.available() > 0 && newData == false) {
+    rc = Serial.read();
+
+    if (recvInProgress == true) {
+      if (rc != endMarker) {
+        receivedChars[ndx] = rc;
+        ndx++;
+        if (ndx >= numChars) {
+          ndx = numChars - 1;
+        }
+      }
+      else {
+        receivedChars[ndx] = '\0'; // terminate the string
+        recvInProgress = false;
+        ndx = 0;
+        newData = true;
+      }
+    }
+
+    else if (rc == startMarker) {
+      recvInProgress = true;
+    }
+  }
 }
