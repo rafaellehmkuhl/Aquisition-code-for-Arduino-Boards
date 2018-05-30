@@ -158,88 +158,95 @@ void loop(){
 
   controller.run();
 
+  // printPitots();
+  printCells();
+  // printPitotAndCells();
+  Serial.println();
+
   if (Serial.available() > 0) {
     inByte = Serial.read();
     if (inByte == 't'){
       celulas_bancada.tareCells();
     }
   }
+}
 
-  Serial.print(1000*pitot0.Voltage);
+
+
+void printPitots(){
+  printTabbed(1000*pitot0.Voltage);
+  printTabbed(1000*pitot1.Voltage);
+  printTabbed(1000*pitot2.Voltage);
+  printTabbed(1000*pitot3.Voltage);
+
+}
+
+void printCells(){
+  printTabbed(celulas_bancada.forca_horizontal);
+  printTabbed(celulas_bancada.forca_frontal_direita);
+  printTabbed(celulas_bancada.forca_frontal_esquerda);
+  printTabbed(celulas_bancada.forca_traseira_direita);
+  printTabbed(celulas_bancada.forca_traseira_esquerda);
+}
+
+void printTabbed(float value){
+  Serial.print(value);
   Serial.print("\t");
+}
 
-  Serial.print(1000*pitot1.Voltage);
-  Serial.print("\t");
+void printPitotAndCells(){
+  printPitots();
+  printCells();
+}
 
-  Serial.print(1000*pitot2.Voltage);
-  Serial.print("\t");
+void sendViaProtocol(){
 
-  Serial.print(1000*pitot3.Voltage);
-  Serial.print("\t");
+  Serial.print("!");
 
-//  Serial.print(celulas_bancada.forca_horizontal);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_frontal_direita);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_frontal_esquerda);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_traseira_direita);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_traseira_esquerda);
-//  Serial.print("\t");
+  Serial.print("fh");
+  Serial.print("=");
+  Serial.print(celulas_bancada.forca_horizontal);
+  Serial.print(";");
 
-  Serial.println();
+  Serial.print("ffd");
+  Serial.print("=");
+  Serial.print(celulas_bancada.forca_frontal_direita);
+  Serial.print(";");
 
-//  Serial.print("!");
-//
-////  Serial.print("fh");
-////  Serial.print("=");
-////  Serial.print(celulas_bancada.forca_horizontal);
-////  Serial.print(";");
-//
-//  Serial.print("ffd");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_frontal_direita);
-//  Serial.print(";");
-//
-//  Serial.print("ffe");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_frontal_esquerda);
-//  Serial.print(";");
-//
-//  Serial.print("ftd");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_traseira_direita);
-//  Serial.print(";");
-//
-//  Serial.print("fte");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_traseira_esquerda);
-//  Serial.print(";");
-//
-//  Serial.print("pitot0");
-//  Serial.print("=");
-//  Serial.print(pitot0.Voltage);
-//  Serial.print(";");
-//
-//  Serial.print("pitot1");
-//  Serial.print("=");
-//  Serial.print(pitot1.Voltage);
-//  Serial.print(";");
-//
-//  Serial.print("pitot2");
-//  Serial.print("=");
-//  Serial.print(pitot2.Voltage);
-//  Serial.print(";");
-//
-//  Serial.print("pitot3");
-//  Serial.print("=");
-//  Serial.print(pitot3.Voltage);
-//  Serial.print(";");
-//
-//  Serial.println("@");
+  Serial.print("ffe");
+  Serial.print("=");
+  Serial.print(celulas_bancada.forca_frontal_esquerda);
+  Serial.print(";");
+
+  Serial.print("ftd");
+  Serial.print("=");
+  Serial.print(celulas_bancada.forca_traseira_direita);
+  Serial.print(";");
+
+  Serial.print("fte");
+  Serial.print("=");
+  Serial.print(celulas_bancada.forca_traseira_esquerda);
+  Serial.print(";");
+
+  Serial.print("pitot0");
+  Serial.print("=");
+  Serial.print(pitot0.Voltage);
+  Serial.print(";");
+
+  Serial.print("pitot1");
+  Serial.print("=");
+  Serial.print(pitot1.Voltage);
+  Serial.print(";");
+
+  Serial.print("pitot2");
+  Serial.print("=");
+  Serial.print(pitot2.Voltage);
+  Serial.print(";");
+
+  Serial.print("pitot3");
+  Serial.print("=");
+  Serial.print(pitot3.Voltage);
+  Serial.print(";");
+
+  Serial.println("@");
 }
