@@ -165,6 +165,8 @@ void loop(){
   // printPitotAndCells();
   Serial.println();
 
+  // sendDataViaProtocol();
+
   receiveCommands();
   interpretCommands();
 }
@@ -202,56 +204,29 @@ void printPitotAndCells(){
   printCells();
 }
 
-void sendViaProtocol(){
+void sendDataViaProtocol(){
 
   Serial.print("!");
 
-  Serial.print("fh");
-  Serial.print("=");
-  Serial.print(celulas_bancada.forca_horizontal);
-  Serial.print(";");
+  printProtocolled("fh", celulas_bancada.forca_horizontal);
+  printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
+  printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
+  printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
+  printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
 
-  Serial.print("ffd");
-  Serial.print("=");
-  Serial.print(celulas_bancada.forca_frontal_direita);
-  Serial.print(";");
-
-  Serial.print("ffe");
-  Serial.print("=");
-  Serial.print(celulas_bancada.forca_frontal_esquerda);
-  Serial.print(";");
-
-  Serial.print("ftd");
-  Serial.print("=");
-  Serial.print(celulas_bancada.forca_traseira_direita);
-  Serial.print(";");
-
-  Serial.print("fte");
-  Serial.print("=");
-  Serial.print(celulas_bancada.forca_traseira_esquerda);
-  Serial.print(";");
-
-  Serial.print("pitot0");
-  Serial.print("=");
-  Serial.print(pitot0.Voltage);
-  Serial.print(";");
-
-  Serial.print("pitot1");
-  Serial.print("=");
-  Serial.print(pitot1.Voltage);
-  Serial.print(";");
-
-  Serial.print("pitot2");
-  Serial.print("=");
-  Serial.print(pitot2.Voltage);
-  Serial.print(";");
-
-  Serial.print("pitot3");
-  Serial.print("=");
-  Serial.print(pitot3.Voltage);
-  Serial.print(";");
+  printProtocolled("pitot0", pitot0.Voltage);
+  printProtocolled("pitot1", pitot1.Voltage);
+  printProtocolled("pitot2", pitot2.Voltage);
+  printProtocolled("pitot3", pitot3.Voltage);
 
   Serial.println("@");
+}
+
+void printProtocolled(String apelido, float value){
+  Serial.print(apelido);
+  Serial.print("=");
+  Serial.print(value);
+  Serial.print(";");
 }
 
 void receiveCommands() {
