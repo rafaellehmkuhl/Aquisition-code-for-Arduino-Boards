@@ -16,6 +16,14 @@ HX711_ADC Celula_FrontalEsquerda(7, 8);
 HX711_ADC Celula_TraseiraDireita(9, 10);
 HX711_ADC Celula_TraseiraEsquerda(11, 12);
 
+const byte numChars = 32;
+char receivedChars[numChars];
+boolean newData = false;
+
+boolean print_pitots = false;
+boolean print_cells = false;
+boolean send_outside = false;
+
 class PitotThread: public Thread
 {
 public:
@@ -38,37 +46,8 @@ public:
   float forca_frontal_esquerda;
   float forca_traseira_direita;
   float forca_traseira_esquerda;
-  char inByte;
 
-  void checkTare(){
-    if (inByte == 't') {
-      Celula_Horizontal.tareNoDelay();
-      Celula_FrontalDireita.tareNoDelay();
-      Celula_FrontalEsquerda.tareNoDelay();
-      Celula_TraseiraDireita.tareNoDelay();
-      Celula_TraseiraEsquerda.tareNoDelay();
-    }
-
-    //check if last tare operation is complete
-
-    if (Celula_Horizontal.getTareStatus() == true) {
-      Serial.println("Celula Horizontal tarada");
-    }
-    if (Celula_FrontalDireita.getTareStatus() == true) {
-      Serial.println("Celula Frontal Direita tarada");
-    }
-    if (Celula_FrontalEsquerda.getTareStatus() == true) {
-      Serial.println("Celula Frontal Esquerda tarada");
-    }
-    if (Celula_TraseiraDireita.getTareStatus() == true) {
-      Serial.println("Celula Traseira Direita tarada");
-    }
-    if (Celula_TraseiraEsquerda.getTareStatus() == true) {
-      Serial.println("Celula Traseira Esquerda tarada");
-    }
-  }
-
-  void initialize(){
+  void initializeCells(){
     Celula_Horizontal.begin();
     Celula_FrontalDireita.begin();
     Celula_FrontalEsquerda.begin();
@@ -98,7 +77,18 @@ public:
     Celula_FrontalEsquerda.setCalFactor(744.0); // user set calibration factor (float)
     Celula_TraseiraDireita.setCalFactor(744.0); // user set calibration factor (float)
     Celula_TraseiraEsquerda.setCalFactor(744.0); // user set calibration factor (float)
-    Serial.println("Startup + tare is complete");
+
+    Serial.println("Startup and tare are complete");
+  }
+
+  void tareCells(){
+
+    // tare cells
+      Celula_Horizontal.tareNoDelay();
+      Celula_FrontalDireita.tareNoDelay();
+      Celula_FrontalEsquerda.tareNoDelay();
+      Celula_TraseiraDireita.tareNoDelay();
+      Celula_TraseiraEsquerda.tareNoDelay();
   }
 
   void run(){
@@ -115,10 +105,6 @@ public:
     forca_frontal_esquerda = Celula_FrontalEsquerda.getData();
     forca_traseira_direita = Celula_TraseiraDireita.getData();
     forca_traseira_esquerda = Celula_TraseiraEsquerda.getData();
-
-    if (Serial.available() > 0) {
-      inByte = Serial.read();
-    }
 
     runned();
   }
@@ -144,7 +130,7 @@ void setup(){
   pitot2.setInterval(1);
   pitot3.setInterval(1);
 
-  celulas_bancada.initialize();
+  celulas_bancada.initializeCells();
   celulas_bancada.setInterval(1);
 
   controller.add(&pitot0);
@@ -160,81 +146,114 @@ void loop(){
 
   controller.run();
 
-  Serial.print(1000*pitot0.Voltage);
-  Serial.print("\t");
+  if (print_pitots){
+    printPitots();
+  }
 
-  Serial.print(1000*pitot1.Voltage);
-  Serial.print("\t");
-
-  Serial.print(1000*pitot2.Voltage);
-  Serial.print("\t");
-
-  Serial.print(1000*pitot3.Voltage);
-  Serial.print("\t");
-
-//  Serial.print(celulas_bancada.forca_horizontal);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_frontal_direita);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_frontal_esquerda);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_traseira_direita);
-//  Serial.print("\t");
-//
-//  Serial.print(celulas_bancada.forca_traseira_esquerda);
-//  Serial.print("\t");
+  if (print_cells){
+    printCells();
+  }
 
   Serial.println();
 
-//  Serial.print("!");
-//
-////  Serial.print("fh");
-////  Serial.print("=");
-////  Serial.print(celulas_bancada.forca_horizontal);
-////  Serial.print(";");
-//
-//  Serial.print("ffd");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_frontal_direita);
-//  Serial.print(";");
-//
-//  Serial.print("ffe");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_frontal_esquerda);
-//  Serial.print(";");
-//
-//  Serial.print("ftd");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_traseira_direita);
-//  Serial.print(";");
-//
-//  Serial.print("fte");
-//  Serial.print("=");
-//  Serial.print(celulas_bancada.forca_traseira_esquerda);
-//  Serial.print(";");
-//
-//  Serial.print("pitot0");
-//  Serial.print("=");
-//  Serial.print(pitot0.Voltage);
-//  Serial.print(";");
-//
-//  Serial.print("pitot1");
-//  Serial.print("=");
-//  Serial.print(pitot1.Voltage);
-//  Serial.print(";");
-//
-//  Serial.print("pitot2");
-//  Serial.print("=");
-//  Serial.print(pitot2.Voltage);
-//  Serial.print(";");
-//
-//  Serial.print("pitot3");
-//  Serial.print("=");
-//  Serial.print(pitot3.Voltage);
-//  Serial.print(";");
-//
-//  Serial.println("@");
+  if (send_outside){
+    sendDataViaProtocol();
+  }
+
+  receiveCommands();
+  interpretCommands();
+}
+
+void interpretCommands(){
+  if (receivedChars == '!tare_cells@') {
+    celulas_bancada.tareCells();
+  }
+  if (receivedChars == '!print_pitots@') {
+    print_pitots = !print_pitots;
+  }
+  if (receivedChars == '!print_cells@') {
+    print_cells = !print_cells;
+  }
+  if (receivedChars == '!send_outside@') {
+    send_outside = !send_outside;
+  }
+}
+
+
+void printPitots(){
+  printTabbed(1000*pitot0.Voltage);
+  printTabbed(1000*pitot1.Voltage);
+  printTabbed(1000*pitot2.Voltage);
+  printTabbed(1000*pitot3.Voltage);
+
+}
+
+void printCells(){
+  printTabbed(celulas_bancada.forca_horizontal);
+  printTabbed(celulas_bancada.forca_frontal_direita);
+  printTabbed(celulas_bancada.forca_frontal_esquerda);
+  printTabbed(celulas_bancada.forca_traseira_direita);
+  printTabbed(celulas_bancada.forca_traseira_esquerda);
+}
+
+void printTabbed(float value){
+  Serial.print(value);
+  Serial.print("\t");
+}
+
+void sendDataViaProtocol(){
+
+  Serial.print("!");
+
+  printProtocolled("fh", celulas_bancada.forca_horizontal);
+  printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
+  printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
+  printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
+  printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
+
+  printProtocolled("pitot0", pitot0.Voltage);
+  printProtocolled("pitot1", pitot1.Voltage);
+  printProtocolled("pitot2", pitot2.Voltage);
+  printProtocolled("pitot3", pitot3.Voltage);
+
+  Serial.println("@");
+}
+
+void printProtocolled(String apelido, float value){
+  Serial.print(apelido);
+  Serial.print("=");
+  Serial.print(value);
+  Serial.print(";");
+}
+
+void receiveCommands() {
+  static boolean recvInProgress = false;
+  static byte ndx = 0;
+  char startMarker = '!';
+  char endMarker = '@';
+  char rc;
+
+  while (Serial.available() > 0 && newData == false) {
+    rc = Serial.read();
+
+    if (recvInProgress == true) {
+      if (rc != endMarker) {
+        receivedChars[ndx] = rc;
+        ndx++;
+        if (ndx >= numChars) {
+          ndx = numChars - 1;
+        }
+      }
+      else {
+        receivedChars[ndx] = '\0'; // terminate the string
+        recvInProgress = false;
+        ndx = 0;
+        newData = true;
+      }
+    }
+
+    else if (rc == startMarker) {
+      recvInProgress = true;
+    }
+  }
 }
