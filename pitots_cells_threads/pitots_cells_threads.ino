@@ -16,6 +16,8 @@ HX711_ADC Celula_FrontalEsquerda(7, 8);
 HX711_ADC Celula_TraseiraDireita(9, 10);
 HX711_ADC Celula_TraseiraEsquerda(11, 12);
 
+char inByte;
+
 class PitotThread: public Thread
 {
 public:
@@ -38,37 +40,8 @@ public:
   float forca_frontal_esquerda;
   float forca_traseira_direita;
   float forca_traseira_esquerda;
-  char inByte;
 
-  void checkTare(){
-    if (inByte == 't') {
-      Celula_Horizontal.tareNoDelay();
-      Celula_FrontalDireita.tareNoDelay();
-      Celula_FrontalEsquerda.tareNoDelay();
-      Celula_TraseiraDireita.tareNoDelay();
-      Celula_TraseiraEsquerda.tareNoDelay();
-    }
-
-    //check if last tare operation is complete
-
-    if (Celula_Horizontal.getTareStatus() == true) {
-      Serial.println("Celula Horizontal tarada");
-    }
-    if (Celula_FrontalDireita.getTareStatus() == true) {
-      Serial.println("Celula Frontal Direita tarada");
-    }
-    if (Celula_FrontalEsquerda.getTareStatus() == true) {
-      Serial.println("Celula Frontal Esquerda tarada");
-    }
-    if (Celula_TraseiraDireita.getTareStatus() == true) {
-      Serial.println("Celula Traseira Direita tarada");
-    }
-    if (Celula_TraseiraEsquerda.getTareStatus() == true) {
-      Serial.println("Celula Traseira Esquerda tarada");
-    }
-  }
-
-  void initialize(){
+  void initializeCells(){
     Celula_Horizontal.begin();
     Celula_FrontalDireita.begin();
     Celula_FrontalEsquerda.begin();
@@ -98,7 +71,36 @@ public:
     Celula_FrontalEsquerda.setCalFactor(744.0); // user set calibration factor (float)
     Celula_TraseiraDireita.setCalFactor(744.0); // user set calibration factor (float)
     Celula_TraseiraEsquerda.setCalFactor(744.0); // user set calibration factor (float)
-    Serial.println("Startup + tare is complete");
+
+    Serial.println("Startup and tare are complete");
+  }
+
+  void tareCells(){
+
+    // tare cells
+      Celula_Horizontal.tareNoDelay();
+      Celula_FrontalDireita.tareNoDelay();
+      Celula_FrontalEsquerda.tareNoDelay();
+      Celula_TraseiraDireita.tareNoDelay();
+      Celula_TraseiraEsquerda.tareNoDelay();
+
+    // check if tare operations are complete
+
+    if (Celula_Horizontal.getTareStatus() == true) {
+      Serial.println("Celula Horizontal tarada");
+    }
+    if (Celula_FrontalDireita.getTareStatus() == true) {
+      Serial.println("Celula Frontal Direita tarada");
+    }
+    if (Celula_FrontalEsquerda.getTareStatus() == true) {
+      Serial.println("Celula Frontal Esquerda tarada");
+    }
+    if (Celula_TraseiraDireita.getTareStatus() == true) {
+      Serial.println("Celula Traseira Direita tarada");
+    }
+    if (Celula_TraseiraEsquerda.getTareStatus() == true) {
+      Serial.println("Celula Traseira Esquerda tarada");
+    }
   }
 
   void run(){
@@ -115,10 +117,6 @@ public:
     forca_frontal_esquerda = Celula_FrontalEsquerda.getData();
     forca_traseira_direita = Celula_TraseiraDireita.getData();
     forca_traseira_esquerda = Celula_TraseiraEsquerda.getData();
-
-    if (Serial.available() > 0) {
-      inByte = Serial.read();
-    }
 
     runned();
   }
@@ -144,7 +142,7 @@ void setup(){
   pitot2.setInterval(1);
   pitot3.setInterval(1);
 
-  celulas_bancada.initialize();
+  celulas_bancada.initializeCells();
   celulas_bancada.setInterval(1);
 
   controller.add(&pitot0);
@@ -159,6 +157,13 @@ void setup(){
 void loop(){
 
   controller.run();
+
+  if (Serial.available() > 0) {
+    inByte = Serial.read();
+    if (inByte == 't'){
+      celulas_bancada.tareCells();
+    }
+  }
 
   Serial.print(1000*pitot0.Voltage);
   Serial.print("\t");
