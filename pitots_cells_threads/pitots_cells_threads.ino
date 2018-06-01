@@ -6,9 +6,6 @@
 #include <Adafruit_ADS1015.h>
 #include <HX711_ADC.h>
 
-//ADS1015 constructor
-Adafruit_ADS1015 ads1(0x49);
-
 //HX711 constructor (DT pin, SCK pin)
 HX711_ADC Celula_Horizontal(3, 4);
 HX711_ADC Celula_FrontalDireita(5, 6);
@@ -22,7 +19,24 @@ boolean newData = false;
 
 boolean print_pitots = false;
 boolean print_cells = false;
+int numPitotBoards = 1;
 boolean send_outside = false;
+
+if (usePitots == true){
+  if (numPitotBoards >= 1){
+      //ADS1015 constructor
+      Adafruit_ADS1015 ads0(0x48);
+  }
+  if (numPitotBoards >= 2){
+      Adafruit_ADS1015 ads1(0x49);
+  }
+  if (numPitotBoards >= 3){
+      Adafruit_ADS1015 ads2(0x4A);
+  }
+  if (numPitotBoards >= 4){
+      Adafruit_ADS1015 ads3(0x4B);
+  }
+}
 
 class PitotThread: public Thread
 {
@@ -30,9 +44,22 @@ public:
   float Voltage = 0.0;
   int16_t adc = 0;
   int16_t adc_port;
+  int16_t board_num;
 
   void run(){
-    adc = ads1.readADC_SingleEnded(adc_port);
+    if (board_num == 0){
+      adc = ads0.readADC_SingleEnded(adc_port);
+    }
+    else if (board_num == 1){
+      adc = ads1.readADC_SingleEnded(adc_port);
+    }
+    else if (board_num == 2){
+      adc = ads2.readADC_SingleEnded(adc_port);
+    }
+    else if (board_num == 3){
+      adc = ads3.readADC_SingleEnded(adc_port);
+    }
+
     Voltage = (adc * 0.1875)/1000;
     runned();
   }
@@ -120,24 +147,109 @@ CellsThread celulas_bancada = CellsThread();
 void setup(){
   Serial.begin(115200);
 
-  pitot0.adc_port = 0;
-  pitot1.adc_port = 1;
-  pitot2.adc_port = 2;
-  pitot3.adc_port = 3;
-
-  pitot0.setInterval(1);
-  pitot1.setInterval(1);
-  pitot2.setInterval(1);
-  pitot3.setInterval(1);
+  if (usePitots == true){
 
   celulas_bancada.initializeCells();
   celulas_bancada.setInterval(1);
 
-  controller.add(&pitot0);
-  controller.add(&pitot1);
-  controller.add(&pitot2);
-  controller.add(&pitot3);
   controller.add(&celulas_bancada);
+    if (numPitotBoards >= 1){
+      //ADS1015 constructor
+      pitot0.board_num = 0;
+      pitot1.board_num = 0;
+      pitot2.board_num = 0;
+      pitot3.board_num = 0;
+
+      pitot0.adc_port = 0;
+      pitot1.adc_port = 1;
+      pitot2.adc_port = 2;
+      pitot3.adc_port = 3;
+
+      pitot0.setInterval(1);
+      pitot1.setInterval(1);
+      pitot2.setInterval(1);
+      pitot3.setInterval(1);
+
+      ads0.begin();
+
+      controller.add(&pitot0);
+      controller.add(&pitot1);
+      controller.add(&pitot2);
+      controller.add(&pitot3);
+    }
+    if (numPitotBoards >= 2){
+      //ADS1015 constructor
+      pitot4.board_num = 1;
+      pitot5.board_num = 1;
+      pitot6.board_num = 1;
+      pitot7.board_num = 1;
+
+      pitot4.adc_port = 0;
+      pitot5.adc_port = 1;
+      pitot6.adc_port = 2;
+      pitot7.adc_port = 3;
+
+      pitot4.setInterval(1);
+      pitot5.setInterval(1);
+      pitot6.setInterval(1);
+      pitot7.setInterval(1);
+
+      ads1.begin();
+
+      controller.add(&pitot4);
+      controller.add(&pitot5);
+      controller.add(&pitot6);
+      controller.add(&pitot7);
+    }
+    if (numPitotBoards >= 3){
+      //ADS1015 constructor
+      pitot8.board_num = 2;
+      pitot9.board_num = 2;
+      pitot10.board_num = 2;
+      pitot11.board_num = 2;
+
+      pitot8.adc_port = 0;
+      pitot9.adc_port = 1;
+      pitot10.adc_port = 2;
+      pitot11.adc_port = 3;
+
+      pitot8.setInterval(1);
+      pitot9.setInterval(1);
+      pitot10.setInterval(1);
+      pitot11.setInterval(1);
+
+      ads2.begin();
+
+      controller.add(&pitot8);
+      controller.add(&pitot9);
+      controller.add(&pitot10);
+      controller.add(&pitot11);
+    }
+    if (numPitotBoards >= 4){
+      //ADS1015 constructor
+      pitot12.board_num = 3;
+      pitot13.board_num = 3;
+      pitot14.board_num = 3;
+      pitot15.board_num = 3;
+
+      pitot12.adc_port = 0;
+      pitot13.adc_port = 1;
+      pitot14.adc_port = 2;
+      pitot15.adc_port = 3;
+
+      pitot12.setInterval(1);
+      pitot13.setInterval(1);
+      pitot14.setInterval(1);
+      pitot15.setInterval(1);
+
+      ads3.begin();
+
+      controller.add(&pitot12);
+      controller.add(&pitot13);
+      controller.add(&pitot14);
+      controller.add(&pitot15);
+    }
+  }
 
   ads1.begin();
 }
@@ -181,11 +293,30 @@ void interpretCommands(){
 
 
 void printPitots(){
-  printTabbed(1000*pitot0.Voltage);
-  printTabbed(1000*pitot1.Voltage);
-  printTabbed(1000*pitot2.Voltage);
-  printTabbed(1000*pitot3.Voltage);
-
+  if (numPitotBoards >= 1){
+    printTabbed(1000*pitot0.Voltage);
+    printTabbed(1000*pitot1.Voltage);
+    printTabbed(1000*pitot2.Voltage);
+    printTabbed(1000*pitot3.Voltage);
+  }
+  if (numPitotBoards >= 2){
+    printTabbed(1000*pitot4.Voltage);
+    printTabbed(1000*pitot5.Voltage);
+    printTabbed(1000*pitot6.Voltage);
+    printTabbed(1000*pitot7.Voltage);
+  }
+  if (numPitotBoards >= 3){
+    printTabbed(1000*pitot8.Voltage);
+    printTabbed(1000*pitot9.Voltage);
+    printTabbed(1000*pitot10.Voltage);
+    printTabbed(1000*pitot11.Voltage);
+  }
+  if (numPitotBoards >= 4){
+    printTabbed(1000*pitot12.Voltage);
+    printTabbed(1000*pitot13.Voltage);
+    printTabbed(1000*pitot14.Voltage);
+    printTabbed(1000*pitot15.Voltage);
+  }
 }
 
 void printCells(){
@@ -211,10 +342,32 @@ void sendDataViaProtocol(){
   printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
   printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
 
-  printProtocolled("pitot0", pitot0.Voltage);
-  printProtocolled("pitot1", pitot1.Voltage);
-  printProtocolled("pitot2", pitot2.Voltage);
-  printProtocolled("pitot3", pitot3.Voltage);
+  if(sendPitotsViaProtocol){
+    if (numPitotBoards >= 1){
+      printProtocolled("pitot0", 1000*pitot0.Voltage);
+      printProtocolled("pitot1", 1000*pitot1.Voltage);
+      printProtocolled("pitot2", 1000*pitot2.Voltage);
+      printProtocolled("pitot3", 1000*pitot3.Voltage);
+    }
+    if (numPitotBoards >= 2){
+      printProtocolled("pitot4", 1000*pitot4.Voltage);
+      printProtocolled("pitot5", 1000*pitot5.Voltage);
+      printProtocolled("pitot6", 1000*pitot6.Voltage);
+      printProtocolled("pitot7", 1000*pitot7.Voltage);
+    }
+    if (numPitotBoards >= 3){
+      printProtocolled("pitot8", 1000*pitot8.Voltage);
+      printProtocolled("pitot9", 1000*pitot9.Voltage);
+      printProtocolled("pitot10", 1000*pitot10.Voltage);
+      printProtocolled("pitot11", 1000*pitot11.Voltage);
+    }
+    if (numPitotBoards >= 4){
+      printProtocolled("pitot12", 1000*pitot12.Voltage);
+      printProtocolled("pitot13", 1000*pitot13.Voltage);
+      printProtocolled("pitot14", 1000*pitot14.Voltage);
+      printProtocolled("pitot15", 1000*pitot15.Voltage);
+    }
+  }
 
   Serial.println("@");
 }
