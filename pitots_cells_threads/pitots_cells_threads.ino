@@ -7,7 +7,7 @@
 #include <HX711_ADC.h>
 
 //ADS1015 constructor
-Adafruit_ADS1015 ads(0x49);
+Adafruit_ADS1015 ads1(0x49);
 
 //HX711 constructor (DT pin, SCK pin)
 HX711_ADC Celula_Horizontal(3, 4);
@@ -32,7 +32,7 @@ public:
   int16_t adc_port;
 
   void run(){
-    adc = ads.readADC_SingleEnded(adc_port);
+    adc = ads1.readADC_SingleEnded(adc_port);
     Voltage = (adc * 0.1875)/1000;
     runned();
   }
@@ -139,7 +139,7 @@ void setup(){
   controller.add(&pitot3);
   controller.add(&celulas_bancada);
 
-  ads.begin();
+  ads1.begin();
 }
 
 void loop(){
