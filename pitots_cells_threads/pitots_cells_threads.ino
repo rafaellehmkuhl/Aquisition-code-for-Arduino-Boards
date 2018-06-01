@@ -10,41 +10,29 @@ const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
 
-boolean usePitots = true;
-boolean printPitots = false;
-boolean sendPitotsViaProtocol = false;
+boolean use_pitots = false;
+boolean print_pitots = false;
+boolean send_pitots_via_protocol = false;
 int numPitotBoards = 1;
 
-boolean useCells = false;
-boolean printCells = false;
-boolean sendCellsViaProtocol = false;
+boolean use_cells = true;
+boolean print_cells = true;
+boolean send_cells_via_protocol = false;
 
 boolean send_outside = false;
 
-if (usePitots == true){
-  if (numPitotBoards >= 1){
-      //ADS1015 constructor
-      Adafruit_ADS1015 ads0(0x48);
-  }
-  if (numPitotBoards >= 2){
-      Adafruit_ADS1015 ads1(0x49);
-  }
-  if (numPitotBoards >= 3){
-      Adafruit_ADS1015 ads2(0x4A);
-  }
-  if (numPitotBoards >= 4){
-      Adafruit_ADS1015 ads3(0x4B);
-  }
-}
+//ADS1015 constructor
+Adafruit_ADS1015 ads0(0x48);
+Adafruit_ADS1015 ads1(0x49);
+Adafruit_ADS1015 ads2(0x4A);
+Adafruit_ADS1015 ads3(0x4B);
 
-if (useCells == true){
-  //HX711 constructor (DT pin, SCK pin)
-  HX711_ADC Celula_Horizontal(3, 4);
-  HX711_ADC Celula_FrontalDireita(5, 6);
-  HX711_ADC Celula_FrontalEsquerda(7, 8);
-  HX711_ADC Celula_TraseiraDireita(9, 10);
-  HX711_ADC Celula_TraseiraEsquerda(11, 12);
-}
+//HX711 constructor (DT pin, SCK pin)
+HX711_ADC Celula_Horizontal(3, 4);
+HX711_ADC Celula_FrontalDireita(5, 6);
+HX711_ADC Celula_FrontalEsquerda(7, 8);
+HX711_ADC Celula_TraseiraDireita(9, 10);
+HX711_ADC Celula_TraseiraEsquerda(11, 12);
 
 class PitotThread: public Thread
 {
@@ -119,11 +107,11 @@ public:
   void tareCells(){
 
     // tare cells
-      Celula_Horizontal.tareNoDelay();
-      Celula_FrontalDireita.tareNoDelay();
-      Celula_FrontalEsquerda.tareNoDelay();
-      Celula_TraseiraDireita.tareNoDelay();
-      Celula_TraseiraEsquerda.tareNoDelay();
+    Celula_Horizontal.tareNoDelay();
+    Celula_FrontalDireita.tareNoDelay();
+    Celula_FrontalEsquerda.tareNoDelay();
+    Celula_TraseiraDireita.tareNoDelay();
+    Celula_TraseiraEsquerda.tareNoDelay();
   }
 
   void run(){
@@ -150,12 +138,24 @@ PitotThread pitot0 = PitotThread();
 PitotThread pitot1 = PitotThread();
 PitotThread pitot2 = PitotThread();
 PitotThread pitot3 = PitotThread();
+PitotThread pitot4 = PitotThread();
+PitotThread pitot5 = PitotThread();
+PitotThread pitot6 = PitotThread();
+PitotThread pitot7 = PitotThread();
+PitotThread pitot8 = PitotThread();
+PitotThread pitot9 = PitotThread();
+PitotThread pitot10 = PitotThread();
+PitotThread pitot11 = PitotThread();
+PitotThread pitot12 = PitotThread();
+PitotThread pitot13 = PitotThread();
+PitotThread pitot14 = PitotThread();
+PitotThread pitot15 = PitotThread();
 CellsThread celulas_bancada = CellsThread();
 
 void setup(){
   Serial.begin(115200);
 
-  if (usePitots == true){
+  if (use_pitots == true){
 
     if (numPitotBoards >= 1){
       //ADS1015 constructor
@@ -255,7 +255,7 @@ void setup(){
     }
   }
 
-  if(useCells == true){
+  if(use_cells == true){
     celulas_bancada.initializeCells();
     celulas_bancada.setInterval(1);
     controller.add(&celulas_bancada);
@@ -266,11 +266,11 @@ void loop(){
 
   controller.run();
 
-  if (printPitots){
+  if (print_pitots){
     printPitots();
   }
 
-  if (printCells){
+  if (print_cells){
     printCells();
   }
 
@@ -289,10 +289,10 @@ void interpretCommands(){
     celulas_bancada.tareCells();
   }
   if (receivedChars == '!print_pitots@') {
-    printPitots = !printPitots;
+    print_pitots = !print_pitots;
   }
   if (receivedChars == '!print_cells@') {
-    printCells = !printCells;
+    print_cells = !print_cells;
   }
   if (receivedChars == '!send_outside@') {
     send_outside = !send_outside;
@@ -344,7 +344,7 @@ void sendDataViaProtocol(){
 
   Serial.print("!");
 
-  if(sendCellsViaProtocol){
+  if(send_cells_via_protocol){
     printProtocolled("fh", celulas_bancada.forca_horizontal);
     printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
     printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
@@ -352,7 +352,7 @@ void sendDataViaProtocol(){
     printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
   }
 
-  if(sendPitotsViaProtocol){
+  if(send_pitots_via_protocol){
     if (numPitotBoards >= 1){
       printProtocolled("pitot0", 1000*pitot0.Voltage);
       printProtocolled("pitot1", 1000*pitot1.Voltage);
