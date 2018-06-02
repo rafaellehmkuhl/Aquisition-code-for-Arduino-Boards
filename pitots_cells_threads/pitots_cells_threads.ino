@@ -257,7 +257,7 @@ void receiveCommands() {
   char endMarker = '@';
   char rc;
 
-  while (Serial.available() > 0 && !newData) {
+  while (Serial.available() && !newData) {
     rc = Serial.read();
 
     if (recvInProgress) {
