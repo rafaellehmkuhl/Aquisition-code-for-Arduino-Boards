@@ -6,8 +6,26 @@
 #include <Adafruit_ADS1015.h>
 #include <HX711_ADC.h>
 
+const byte numChars = 32;
+char receivedChars[numChars];
+boolean newData = false;
+
+boolean use_pitots = false;
+boolean print_pitots = false;
+boolean send_pitots_via_protocol = false;
+int numPitotBoards = 1;
+
+boolean use_cells = true;
+boolean print_cells = true;
+boolean send_cells_via_protocol = false;
+
+boolean send_outside = false;
+
 //ADS1015 constructor
-Adafruit_ADS1015 ads(0x49);
+Adafruit_ADS1015 ads0(0x48);
+Adafruit_ADS1015 ads1(0x49);
+Adafruit_ADS1015 ads2(0x4A);
+Adafruit_ADS1015 ads3(0x4B);
 
 //HX711 constructor (DT pin, SCK pin)
 HX711_ADC Celula_Horizontal(3, 4);
@@ -16,20 +34,17 @@ HX711_ADC Celula_FrontalEsquerda(7, 8);
 HX711_ADC Celula_TraseiraDireita(9, 10);
 HX711_ADC Celula_TraseiraEsquerda(11, 12);
 
-const byte numChars = 32;
-char receivedChars[numChars];
-boolean newData = false;
-
-boolean print_pitots = false;
-boolean print_cells = false;
-boolean send_outside = false;
-
 class PitotThread: public Thread
 {
 public:
   float Voltage = 0.0;
   int16_t adc = 0;
-  int16_t adc_port;
+  int adc_port;
+  int board_num;
+  String apelido;
+  Adafruit_ADS1015 &ads;
+  PitotThread(){};
+  PitotThread(int adc_port, int board_num, String apelido, Adafruit_ADS1015 &ads){};
 
   void run(){
     adc = ads.readADC_SingleEnded(adc_port);
@@ -84,11 +99,11 @@ public:
   void tareCells(){
 
     // tare cells
-      Celula_Horizontal.tareNoDelay();
-      Celula_FrontalDireita.tareNoDelay();
-      Celula_FrontalEsquerda.tareNoDelay();
-      Celula_TraseiraDireita.tareNoDelay();
-      Celula_TraseiraEsquerda.tareNoDelay();
+    Celula_Horizontal.tareNoDelay();
+    Celula_FrontalDireita.tareNoDelay();
+    Celula_FrontalEsquerda.tareNoDelay();
+    Celula_TraseiraDireita.tareNoDelay();
+    Celula_TraseiraEsquerda.tareNoDelay();
   }
 
   void run(){
@@ -111,35 +126,49 @@ public:
 };
 
 ThreadController controller = ThreadController();
-PitotThread pitot0 = PitotThread();
-PitotThread pitot1 = PitotThread();
-PitotThread pitot2 = PitotThread();
-PitotThread pitot3 = PitotThread();
+
+int pitotCount = 16;
+PitotThread pitots[] = {
+  PitotThread(0, 0, "pitot0", ads0),
+  PitotThread(1, 0, "pitot1", ads0),
+  PitotThread(2, 0, "pitot2", ads0),
+  PitotThread(3, 0, "pitot3", ads0),
+  PitotThread(0, 1, "pitot4", ads1),
+  PitotThread(1, 1, "pitot5", ads1),
+  PitotThread(2, 1, "pitot6", ads1),
+  PitotThread(3, 1, "pitot7", ads1),
+  PitotThread(0, 2, "pitot8", ads2),
+  PitotThread(1, 2, "pitot9", ads2),
+  PitotThread(2, 2, "pitot10", ads2),
+  PitotThread(3, 2, "pitot11", ads2),
+  PitotThread(0, 3, "pitot12", ads3),
+  PitotThread(1, 3, "pitot13", ads3),
+  PitotThread(2, 3, "pitot14", ads3),
+  PitotThread(3, 3, "pitot15", ads3)
+};
+
 CellsThread celulas_bancada = CellsThread();
 
 void setup(){
   Serial.begin(115200);
 
-  pitot0.adc_port = 0;
-  pitot1.adc_port = 1;
-  pitot2.adc_port = 2;
-  pitot3.adc_port = 3;
+  if (use_pitots == true){
+    for (int i=0; i<pitotCount; i++){
+      pitots[i].setInterval(1);
+      controller.add(&pitots[i]);
+    }
 
-  pitot0.setInterval(1);
-  pitot1.setInterval(1);
-  pitot2.setInterval(1);
-  pitot3.setInterval(1);
+    ads0.begin();
+    ads1.begin();
+    ads2.begin();
+    ads3.begin();
+  }
 
-  celulas_bancada.initializeCells();
-  celulas_bancada.setInterval(1);
-
-  controller.add(&pitot0);
-  controller.add(&pitot1);
-  controller.add(&pitot2);
-  controller.add(&pitot3);
-  controller.add(&celulas_bancada);
-
-  ads.begin();
+  if(use_cells == true){
+    celulas_bancada.initializeCells();
+    celulas_bancada.setInterval(1);
+    controller.add(&celulas_bancada);
+  }
 }
 
 void loop(){
@@ -181,11 +210,9 @@ void interpretCommands(){
 
 
 void printPitots(){
-  printTabbed(1000*pitot0.Voltage);
-  printTabbed(1000*pitot1.Voltage);
-  printTabbed(1000*pitot2.Voltage);
-  printTabbed(1000*pitot3.Voltage);
-
+  for (int i=0; i<4*numPitotBoards; i++){
+    printTabbed(1000*pitots[i].Voltage);
+  }
 }
 
 void printCells(){
@@ -205,16 +232,19 @@ void sendDataViaProtocol(){
 
   Serial.print("!");
 
-  printProtocolled("fh", celulas_bancada.forca_horizontal);
-  printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
-  printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
-  printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
-  printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
+  if(send_cells_via_protocol){
+    printProtocolled("fh", celulas_bancada.forca_horizontal);
+    printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
+    printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
+    printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
+    printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
+  }
 
-  printProtocolled("pitot0", pitot0.Voltage);
-  printProtocolled("pitot1", pitot1.Voltage);
-  printProtocolled("pitot2", pitot2.Voltage);
-  printProtocolled("pitot3", pitot3.Voltage);
+  if(send_pitots_via_protocol){
+    for (int i=0; i<4*numPitotBoards; i++){
+      printProtocolled(pitots[i].apelido, 1000*pitots[i].Voltage);
+    }
+  }
 
   Serial.println("@");
 }
