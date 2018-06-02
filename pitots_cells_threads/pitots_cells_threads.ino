@@ -152,7 +152,7 @@ CellsThread celulas_bancada = CellsThread();
 void setup(){
   Serial.begin(115200);
 
-  if (use_pitots == true){
+  if (use_pitots){
     for (int i=0; i<pitotCount; i++){
       pitots[i].setInterval(1);
       controller.add(&pitots[i]);
@@ -164,7 +164,7 @@ void setup(){
     ads3.begin();
   }
 
-  if(use_cells == true){
+  if(use_cells){
     celulas_bancada.initializeCells();
     celulas_bancada.setInterval(1);
     controller.add(&celulas_bancada);
@@ -263,10 +263,10 @@ void receiveCommands() {
   char endMarker = '@';
   char rc;
 
-  while (Serial.available() > 0 && newData == false) {
+  while (Serial.available() > 0 && !newData) {
     rc = Serial.read();
 
-    if (recvInProgress == true) {
+    if (recvInProgress) {
       if (rc != endMarker) {
         receivedChars[ndx] = rc;
         ndx++;
