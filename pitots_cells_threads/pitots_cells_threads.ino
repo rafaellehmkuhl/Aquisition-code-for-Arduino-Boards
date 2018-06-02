@@ -2,27 +2,27 @@
 #include <Thread.h>
 #include <ThreadController.h>
 
+#include <ArduinoSTL.h>
 #include <Wire.h>
 #include <Adafruit_ADS1015.h>
 #include <HX711_ADC.h>
 
 #include "PitotThread.h"
 #include "CellsThread.h"
+#include "BancadaFunctions.h"
 
-const byte numChars = 32;
-char receivedChars[numChars];
-boolean newData = false;
-
-boolean use_pitots = false;
-boolean print_pitots = false;
-boolean send_pitots_via_protocol = false;
+bool use_pitots = false;
+bool print_pitots = false;
+bool send_pitots_via_protocol = false;
 int numPitotBoards = 1;
 
-boolean use_cells = true;
-boolean print_cells = true;
-boolean send_cells_via_protocol = false;
+bool use_cells = true;
+bool print_cells = true;
+bool send_cells_via_protocol = false;
 
-boolean send_outside = false;
+bool send_outside = false;
+
+BancadaFunctions bancada;
 
 //ADS1015 constructor
 Adafruit_ADS1015 ads0(0x48);
@@ -39,7 +39,7 @@ HX711_ADC Celula_TraseiraEsquerda(11, 12);
 
 ThreadController controller = ThreadController();
 
-PitotThread pitots[] = {
+std::vector<PitotThread> pitots = {
   PitotThread(0, "pitot0", ads0),
   PitotThread(1, "pitot1", ads0),
   PitotThread(2, "pitot2", ads0),
@@ -91,110 +91,19 @@ void loop(){
   controller.run();
 
   if (print_pitots){
-    printPitots();
+    bancada.printPitots(numPitotBoards, pitots);
   }
 
   if (print_cells){
-    printCells();
+    bancada.printCells(celulas_bancada);
   }
 
   printf("\n");
 
   if (send_outside){
-    sendDataViaProtocol();
+    bancada.sendDataViaProtocol(send_cells_via_protocol, send_pitots_via_protocol, numPitotBoards, pitots, celulas_bancada);
   }
 
-  receiveCommands();
-  interpretCommands();
-}
-
-void interpretCommands(){
-  if (receivedChars == '!tare_cells@') {
-    celulas_bancada.tareCells();
-  }
-  if (receivedChars == '!print_pitots@') {
-    print_pitots = !print_pitots;
-  }
-  if (receivedChars == '!print_cells@') {
-    print_cells = !print_cells;
-  }
-  if (receivedChars == '!send_outside@') {
-    send_outside = !send_outside;
-  }
-}
-
-
-void printPitots(){
-  for (int i=0; i<4*numPitotBoards; i++){
-    printTabbed(1000*pitots[i].Voltage);
-  }
-}
-
-void printCells(){
-  printTabbed(celulas_bancada.forca_horizontal);
-  printTabbed(celulas_bancada.forca_frontal_direita);
-  printTabbed(celulas_bancada.forca_frontal_esquerda);
-  printTabbed(celulas_bancada.forca_traseira_direita);
-  printTabbed(celulas_bancada.forca_traseira_esquerda);
-}
-
-void printTabbed(float value){
-  printf("%f\t", value);
-}
-
-void sendDataViaProtocol(){
-
-  printf("!");
-
-  if(send_cells_via_protocol){
-    printProtocolled("fh", celulas_bancada.forca_horizontal);
-    printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
-    printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
-    printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
-    printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
-  }
-
-  if(send_pitots_via_protocol){
-    for (int i=0; i<4*numPitotBoards; i++){
-      printProtocolled(pitots[i].apelido, 1000*pitots[i].Voltage);
-    }
-  }
-
-  printf("@\n");
-}
-
-void printProtocolled(String apelido, float value){
-  printf("%s=%f;", apelido.c_str(), value);
-}
-
-void receiveCommands() {
-  static boolean recvInProgress = false;
-  static byte ndx = 0;
-  char startMarker = '!';
-  char endMarker = '@';
-  char rc;
-
-  while (Serial.available() && !newData) {
-    rc = Serial.read();
-
-    if (recvInProgress) {
-      if (rc != endMarker) {
-        receivedChars[ndx] = rc;
-        ndx++;
-        if (ndx >= numChars) {
-          ndx = numChars - 1;
-        }
-      }
-      else {
-        receivedChars[ndx] = '\0'; // terminate the string
-        recvInProgress = false;
-        ndx = 0;
-        newData = true;
-      }
-    }
-
-    else if (rc == startMarker) {
-      recvInProgress = true;
-    }
-  }
+  bancada.receiveCommands();
+  bancada.interpretCommands(celulas_bancada, print_pitots, print_cells, send_outside);
 }
