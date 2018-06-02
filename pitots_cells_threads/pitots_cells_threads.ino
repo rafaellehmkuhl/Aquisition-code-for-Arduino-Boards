@@ -40,11 +40,10 @@ public:
   float Voltage = 0.0;
   int16_t adc = 0;
   int adc_port;
-  int board_num;
   String apelido;
   Adafruit_ADS1015 &ads;
   PitotThread(){};
-  PitotThread(int adc_port, int board_num, String apelido, Adafruit_ADS1015 &ads){};
+  PitotThread(int adc_port, String apelido, Adafruit_ADS1015 &ads){};
 
   void run(){
     adc = ads.readADC_SingleEnded(adc_port);
@@ -127,24 +126,23 @@ public:
 
 ThreadController controller = ThreadController();
 
-int pitotCount = 16;
 PitotThread pitots[] = {
-  PitotThread(0, 0, "pitot0", ads0),
-  PitotThread(1, 0, "pitot1", ads0),
-  PitotThread(2, 0, "pitot2", ads0),
-  PitotThread(3, 0, "pitot3", ads0),
-  PitotThread(0, 1, "pitot4", ads1),
-  PitotThread(1, 1, "pitot5", ads1),
-  PitotThread(2, 1, "pitot6", ads1),
-  PitotThread(3, 1, "pitot7", ads1),
-  PitotThread(0, 2, "pitot8", ads2),
-  PitotThread(1, 2, "pitot9", ads2),
-  PitotThread(2, 2, "pitot10", ads2),
-  PitotThread(3, 2, "pitot11", ads2),
-  PitotThread(0, 3, "pitot12", ads3),
-  PitotThread(1, 3, "pitot13", ads3),
-  PitotThread(2, 3, "pitot14", ads3),
-  PitotThread(3, 3, "pitot15", ads3)
+  PitotThread(0, "pitot0", ads0),
+  PitotThread(1, "pitot1", ads0),
+  PitotThread(2, "pitot2", ads0),
+  PitotThread(3, "pitot3", ads0),
+  PitotThread(0, "pitot4", ads1),
+  PitotThread(1, "pitot5", ads1),
+  PitotThread(2, "pitot6", ads1),
+  PitotThread(3, "pitot7", ads1),
+  PitotThread(0, "pitot8", ads2),
+  PitotThread(1, "pitot9", ads2),
+  PitotThread(2, "pitot10", ads2),
+  PitotThread(3, "pitot11", ads2),
+  PitotThread(0, "pitot12", ads3),
+  PitotThread(1, "pitot13", ads3),
+  PitotThread(2, "pitot14", ads3),
+  PitotThread(3, "pitot15", ads3)
 };
 
 CellsThread celulas_bancada = CellsThread();
@@ -152,10 +150,10 @@ CellsThread celulas_bancada = CellsThread();
 void setup(){
   Serial.begin(115200);
 
-  if (use_pitots == true){
-    for (int i=0; i<pitotCount; i++){
-      pitots[i].setInterval(1);
-      controller.add(&pitots[i]);
+  if (use_pitots){
+    for (PitotThread& pitot : pitots){
+      pitot.setInterval(1);
+      controller.add(&pitot);
     }
 
     ads0.begin();
@@ -164,7 +162,7 @@ void setup(){
     ads3.begin();
   }
 
-  if(use_cells == true){
+  if(use_cells){
     celulas_bancada.initializeCells();
     celulas_bancada.setInterval(1);
     controller.add(&celulas_bancada);
@@ -183,7 +181,7 @@ void loop(){
     printCells();
   }
 
-  Serial.println();
+  printf("\n");
 
   if (send_outside){
     sendDataViaProtocol();
@@ -224,13 +222,12 @@ void printCells(){
 }
 
 void printTabbed(float value){
-  Serial.print(value);
-  Serial.print("\t");
+  printf("%f\t", value);
 }
 
 void sendDataViaProtocol(){
 
-  Serial.print("!");
+  printf("!");
 
   if(send_cells_via_protocol){
     printProtocolled("fh", celulas_bancada.forca_horizontal);
@@ -246,14 +243,11 @@ void sendDataViaProtocol(){
     }
   }
 
-  Serial.println("@");
+  printf("@\n");
 }
 
 void printProtocolled(String apelido, float value){
-  Serial.print(apelido);
-  Serial.print("=");
-  Serial.print(value);
-  Serial.print(";");
+  printf("%s=%f;", apelido, value);
 }
 
 void receiveCommands() {
@@ -263,10 +257,10 @@ void receiveCommands() {
   char endMarker = '@';
   char rc;
 
-  while (Serial.available() > 0 && newData == false) {
+  while (Serial.available() && !newData) {
     rc = Serial.read();
 
-    if (recvInProgress == true) {
+    if (recvInProgress) {
       if (rc != endMarker) {
         receivedChars[ndx] = rc;
         ndx++;
