@@ -39,23 +39,15 @@ class PitotThread: public Thread
 public:
   float Voltage = 0.0;
   int16_t adc = 0;
-  int16_t adc_port;
-  int16_t board_num;
+  int adc_port;
+  int board_num;
+  String apelido;
+  Adafruit_ADS1015 &ads;
+  PitotThread(){};
+  PitotThread(int adc_port, int board_num, String apelido, Adafruit_ADS1015 &ads){};
 
   void run(){
-    if (board_num == 0){
-      adc = ads0.readADC_SingleEnded(adc_port);
-    }
-    else if (board_num == 1){
-      adc = ads1.readADC_SingleEnded(adc_port);
-    }
-    else if (board_num == 2){
-      adc = ads2.readADC_SingleEnded(adc_port);
-    }
-    else if (board_num == 3){
-      adc = ads3.readADC_SingleEnded(adc_port);
-    }
-
+    adc = ads.readADC_SingleEnded(adc_port);
     Voltage = (adc * 0.1875)/1000;
     runned();
   }
@@ -134,125 +126,42 @@ public:
 };
 
 ThreadController controller = ThreadController();
-PitotThread pitot0 = PitotThread();
-PitotThread pitot1 = PitotThread();
-PitotThread pitot2 = PitotThread();
-PitotThread pitot3 = PitotThread();
-PitotThread pitot4 = PitotThread();
-PitotThread pitot5 = PitotThread();
-PitotThread pitot6 = PitotThread();
-PitotThread pitot7 = PitotThread();
-PitotThread pitot8 = PitotThread();
-PitotThread pitot9 = PitotThread();
-PitotThread pitot10 = PitotThread();
-PitotThread pitot11 = PitotThread();
-PitotThread pitot12 = PitotThread();
-PitotThread pitot13 = PitotThread();
-PitotThread pitot14 = PitotThread();
-PitotThread pitot15 = PitotThread();
+
+int pitotCount = 16;
+PitotThread pitots[] = {
+  PitotThread(0, 0, "pitot0", ads0),
+  PitotThread(1, 0, "pitot1", ads0),
+  PitotThread(2, 0, "pitot2", ads0),
+  PitotThread(3, 0, "pitot3", ads0),
+  PitotThread(0, 1, "pitot4", ads1),
+  PitotThread(1, 1, "pitot5", ads1),
+  PitotThread(2, 1, "pitot6", ads1),
+  PitotThread(3, 1, "pitot7", ads1),
+  PitotThread(0, 2, "pitot8", ads2),
+  PitotThread(1, 2, "pitot9", ads2),
+  PitotThread(2, 2, "pitot10", ads2),
+  PitotThread(3, 2, "pitot11", ads2),
+  PitotThread(0, 3, "pitot12", ads3),
+  PitotThread(1, 3, "pitot13", ads3),
+  PitotThread(2, 3, "pitot14", ads3),
+  PitotThread(3, 3, "pitot15", ads3)
+};
+
 CellsThread celulas_bancada = CellsThread();
 
 void setup(){
   Serial.begin(115200);
 
   if (use_pitots == true){
-
-    if (numPitotBoards >= 1){
-      //ADS1015 constructor
-      pitot0.board_num = 0;
-      pitot1.board_num = 0;
-      pitot2.board_num = 0;
-      pitot3.board_num = 0;
-
-      pitot0.adc_port = 0;
-      pitot1.adc_port = 1;
-      pitot2.adc_port = 2;
-      pitot3.adc_port = 3;
-
-      pitot0.setInterval(1);
-      pitot1.setInterval(1);
-      pitot2.setInterval(1);
-      pitot3.setInterval(1);
-
-      ads0.begin();
-
-      controller.add(&pitot0);
-      controller.add(&pitot1);
-      controller.add(&pitot2);
-      controller.add(&pitot3);
+    for (int i=0; i<pitotCount; i++){
+      pitots[i].setInterval(1);
+      controller.add(&pitots[i]);
     }
-    if (numPitotBoards >= 2){
-      //ADS1015 constructor
-      pitot4.board_num = 1;
-      pitot5.board_num = 1;
-      pitot6.board_num = 1;
-      pitot7.board_num = 1;
 
-      pitot4.adc_port = 0;
-      pitot5.adc_port = 1;
-      pitot6.adc_port = 2;
-      pitot7.adc_port = 3;
-
-      pitot4.setInterval(1);
-      pitot5.setInterval(1);
-      pitot6.setInterval(1);
-      pitot7.setInterval(1);
-
-      ads1.begin();
-
-      controller.add(&pitot4);
-      controller.add(&pitot5);
-      controller.add(&pitot6);
-      controller.add(&pitot7);
-    }
-    if (numPitotBoards >= 3){
-      //ADS1015 constructor
-      pitot8.board_num = 2;
-      pitot9.board_num = 2;
-      pitot10.board_num = 2;
-      pitot11.board_num = 2;
-
-      pitot8.adc_port = 0;
-      pitot9.adc_port = 1;
-      pitot10.adc_port = 2;
-      pitot11.adc_port = 3;
-
-      pitot8.setInterval(1);
-      pitot9.setInterval(1);
-      pitot10.setInterval(1);
-      pitot11.setInterval(1);
-
-      ads2.begin();
-
-      controller.add(&pitot8);
-      controller.add(&pitot9);
-      controller.add(&pitot10);
-      controller.add(&pitot11);
-    }
-    if (numPitotBoards >= 4){
-      //ADS1015 constructor
-      pitot12.board_num = 3;
-      pitot13.board_num = 3;
-      pitot14.board_num = 3;
-      pitot15.board_num = 3;
-
-      pitot12.adc_port = 0;
-      pitot13.adc_port = 1;
-      pitot14.adc_port = 2;
-      pitot15.adc_port = 3;
-
-      pitot12.setInterval(1);
-      pitot13.setInterval(1);
-      pitot14.setInterval(1);
-      pitot15.setInterval(1);
-
-      ads3.begin();
-
-      controller.add(&pitot12);
-      controller.add(&pitot13);
-      controller.add(&pitot14);
-      controller.add(&pitot15);
-    }
+    ads0.begin();
+    ads1.begin();
+    ads2.begin();
+    ads3.begin();
   }
 
   if(use_cells == true){
@@ -301,29 +210,8 @@ void interpretCommands(){
 
 
 void printPitots(){
-  if (numPitotBoards >= 1){
-    printTabbed(1000*pitot0.Voltage);
-    printTabbed(1000*pitot1.Voltage);
-    printTabbed(1000*pitot2.Voltage);
-    printTabbed(1000*pitot3.Voltage);
-  }
-  if (numPitotBoards >= 2){
-    printTabbed(1000*pitot4.Voltage);
-    printTabbed(1000*pitot5.Voltage);
-    printTabbed(1000*pitot6.Voltage);
-    printTabbed(1000*pitot7.Voltage);
-  }
-  if (numPitotBoards >= 3){
-    printTabbed(1000*pitot8.Voltage);
-    printTabbed(1000*pitot9.Voltage);
-    printTabbed(1000*pitot10.Voltage);
-    printTabbed(1000*pitot11.Voltage);
-  }
-  if (numPitotBoards >= 4){
-    printTabbed(1000*pitot12.Voltage);
-    printTabbed(1000*pitot13.Voltage);
-    printTabbed(1000*pitot14.Voltage);
-    printTabbed(1000*pitot15.Voltage);
+  for (int i=0; i<4*numPitotBoards; i++){
+    printTabbed(1000*pitots[i].Voltage);
   }
 }
 
@@ -353,29 +241,8 @@ void sendDataViaProtocol(){
   }
 
   if(send_pitots_via_protocol){
-    if (numPitotBoards >= 1){
-      printProtocolled("pitot0", 1000*pitot0.Voltage);
-      printProtocolled("pitot1", 1000*pitot1.Voltage);
-      printProtocolled("pitot2", 1000*pitot2.Voltage);
-      printProtocolled("pitot3", 1000*pitot3.Voltage);
-    }
-    if (numPitotBoards >= 2){
-      printProtocolled("pitot4", 1000*pitot4.Voltage);
-      printProtocolled("pitot5", 1000*pitot5.Voltage);
-      printProtocolled("pitot6", 1000*pitot6.Voltage);
-      printProtocolled("pitot7", 1000*pitot7.Voltage);
-    }
-    if (numPitotBoards >= 3){
-      printProtocolled("pitot8", 1000*pitot8.Voltage);
-      printProtocolled("pitot9", 1000*pitot9.Voltage);
-      printProtocolled("pitot10", 1000*pitot10.Voltage);
-      printProtocolled("pitot11", 1000*pitot11.Voltage);
-    }
-    if (numPitotBoards >= 4){
-      printProtocolled("pitot12", 1000*pitot12.Voltage);
-      printProtocolled("pitot13", 1000*pitot13.Voltage);
-      printProtocolled("pitot14", 1000*pitot14.Voltage);
-      printProtocolled("pitot15", 1000*pitot15.Voltage);
+    for (int i=0; i<4*numPitotBoards; i++){
+      printProtocolled(pitots[i].apelido, 1000*pitots[i].Voltage);
     }
   }
 
