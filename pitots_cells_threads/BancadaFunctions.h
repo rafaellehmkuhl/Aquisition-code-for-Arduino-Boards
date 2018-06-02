@@ -23,7 +23,7 @@ public:
         }
     }
 
-    void BancadaFunctions::printPitots(int numPitotBoards, std::vector<PitotThread> &pitots){
+    void BancadaFunctions::printPitots(int numPitotBoards, std::vector<PitotBoardThread> &pitots){
         for (int i=0; i<4*numPitotBoards; i++){
             printTabbed(1000*pitots[i].Voltage);
         }
@@ -41,7 +41,7 @@ public:
         printf("%f\t", value);
     }
 
-    void BancadaFunctions::sendDataViaProtocol(bool send_cells_via_protocol, bool send_pitots_via_protocol, int numPitotBoards, std::vector<PitotThread> &pitots, CellsThread &celulas_bancada){
+    void BancadaFunctions::sendDataViaProtocol(bool send_cells_via_protocol, bool send_pitots_via_protocol, int numPitotBoards, std::vector<PitotBoardThread> &pitots, CellsThread &celulas_bancada){
 
         printf("!");
 

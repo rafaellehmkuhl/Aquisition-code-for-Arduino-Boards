@@ -6,7 +6,7 @@
 #include <Wire.h>
 #include <Adafruit_ADS1015.h>
 
-#include "PitotThread.h"
+#include "PitotBoardThread.h"
 #include "CellsThread.h"
 #include "BancadaFunctions.h"
 
@@ -31,23 +31,23 @@ Adafruit_ADS1015 ads3(0x4B);
 
 ThreadController controller = ThreadController();
 
-std::vector<PitotThread> pitots = {
-  PitotThread(0, "pitot0", ads0),
-  PitotThread(1, "pitot1", ads0),
-  PitotThread(2, "pitot2", ads0),
-  PitotThread(3, "pitot3", ads0),
-  PitotThread(0, "pitot4", ads1),
-  PitotThread(1, "pitot5", ads1),
-  PitotThread(2, "pitot6", ads1),
-  PitotThread(3, "pitot7", ads1),
-  PitotThread(0, "pitot8", ads2),
-  PitotThread(1, "pitot9", ads2),
-  PitotThread(2, "pitot10", ads2),
-  PitotThread(3, "pitot11", ads2),
-  PitotThread(0, "pitot12", ads3),
-  PitotThread(1, "pitot13", ads3),
-  PitotThread(2, "pitot14", ads3),
-  PitotThread(3, "pitot15", ads3)
+std::vector<PitotBoardThread> pitots = {
+  PitotBoardThread(0, "pitot0", ads0),
+  PitotBoardThread(1, "pitot1", ads0),
+  PitotBoardThread(2, "pitot2", ads0),
+  PitotBoardThread(3, "pitot3", ads0),
+  PitotBoardThread(0, "pitot4", ads1),
+  PitotBoardThread(1, "pitot5", ads1),
+  PitotBoardThread(2, "pitot6", ads1),
+  PitotBoardThread(3, "pitot7", ads1),
+  PitotBoardThread(0, "pitot8", ads2),
+  PitotBoardThread(1, "pitot9", ads2),
+  PitotBoardThread(2, "pitot10", ads2),
+  PitotBoardThread(3, "pitot11", ads2),
+  PitotBoardThread(0, "pitot12", ads3),
+  PitotBoardThread(1, "pitot13", ads3),
+  PitotBoardThread(2, "pitot14", ads3),
+  PitotBoardThread(3, "pitot15", ads3)
 };
 
 CellsThread celulas_bancada = CellsThread();
@@ -56,7 +56,7 @@ void setup(){
   Serial.begin(115200);
 
   if (use_pitots){
-    for (PitotThread& pitot : pitots){
+    for (PitotBoardThread& pitot : pitots){
       pitot.setInterval(1);
       controller.add(&pitot);
     }
