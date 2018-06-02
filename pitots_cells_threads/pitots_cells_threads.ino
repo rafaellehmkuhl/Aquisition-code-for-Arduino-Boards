@@ -181,7 +181,7 @@ void loop(){
     printCells();
   }
 
-  Serial.println();
+  printf("\n");
 
   if (send_outside){
     sendDataViaProtocol();
@@ -222,13 +222,12 @@ void printCells(){
 }
 
 void printTabbed(float value){
-  Serial.print(value);
-  Serial.print("\t");
+  printf("%f\t", value);
 }
 
 void sendDataViaProtocol(){
 
-  Serial.print("!");
+  printf("!");
 
   if(send_cells_via_protocol){
     printProtocolled("fh", celulas_bancada.forca_horizontal);
@@ -244,14 +243,11 @@ void sendDataViaProtocol(){
     }
   }
 
-  Serial.println("@");
+  printf("@\n");
 }
 
 void printProtocolled(String apelido, float value){
-  Serial.print(apelido);
-  Serial.print("=");
-  Serial.print(value);
-  Serial.print(";");
+  printf("%s=%f;", apelido, value);
 }
 
 void receiveCommands() {
