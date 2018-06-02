@@ -153,9 +153,9 @@ void setup(){
   Serial.begin(115200);
 
   if (use_pitots){
-    for (int i=0; i<pitotCount; i++){
-      pitots[i].setInterval(1);
-      controller.add(&pitots[i]);
+    for (PitotThread& pitot : pitots){
+      pitot.setInterval(1);
+      controller.add(&pitot);
     }
 
     ads0.begin();
