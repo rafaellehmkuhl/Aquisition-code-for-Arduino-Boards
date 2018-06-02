@@ -5,7 +5,6 @@
 #include <ArduinoSTL.h>
 #include <Wire.h>
 #include <Adafruit_ADS1015.h>
-#include <HX711_ADC.h>
 
 #include "PitotThread.h"
 #include "CellsThread.h"
@@ -30,13 +29,6 @@ Adafruit_ADS1015 ads1(0x49);
 Adafruit_ADS1015 ads2(0x4A);
 Adafruit_ADS1015 ads3(0x4B);
 
-//HX711 constructor (DT pin, SCK pin)
-HX711_ADC Celula_Horizontal(3, 4);
-HX711_ADC Celula_FrontalDireita(5, 6);
-HX711_ADC Celula_FrontalEsquerda(7, 8);
-HX711_ADC Celula_TraseiraDireita(9, 10);
-HX711_ADC Celula_TraseiraEsquerda(11, 12);
-
 ThreadController controller = ThreadController();
 
 std::vector<PitotThread> pitots = {
@@ -58,11 +50,7 @@ std::vector<PitotThread> pitots = {
   PitotThread(3, "pitot15", ads3)
 };
 
-CellsThread celulas_bancada = CellsThread(Celula_Horizontal,
-                                          Celula_FrontalDireita,
-                                          Celula_FrontalEsquerda,
-                                          Celula_TraseiraDireita,
-                                          Celula_TraseiraEsquerda);
+CellsThread celulas_bancada = CellsThread();
 
 void setup(){
   Serial.begin(115200);

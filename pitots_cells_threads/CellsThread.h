@@ -1,3 +1,5 @@
+#include <HX711_ADC.h>
+
 class CellsThread: public Thread
 {
 public:
@@ -7,17 +9,13 @@ public:
   float forca_traseira_direita;
   float forca_traseira_esquerda;
 
-  HX711_ADC &Celula_Horizontal;
-  HX711_ADC &Celula_FrontalDireita;
-  HX711_ADC &Celula_FrontalEsquerda;
-  HX711_ADC &Celula_TraseiraDireita;
-  HX711_ADC &Celula_TraseiraEsquerda;
-
-  CellsThread(HX711_ADC &Celula_Horizontal,
-              HX711_ADC &Celula_FrontalDireita,
-              HX711_ADC &Celula_FrontalEsquerda,
-              HX711_ADC &Celula_TraseiraDireita,
-              HX711_ADC &Celula_TraseiraEsquerda){};
+  CellsThread() :
+    Celula_Horizontal(3, 4),
+    Celula_FrontalDireita(5, 6),
+    Celula_FrontalEsquerda(7, 8),
+    Celula_TraseiraDireita(9, 10),
+    Celula_TraseiraEsquerda(11, 12)
+  {}
 
   void initializeCells(){
     Celula_Horizontal.begin();
@@ -80,4 +78,11 @@ public:
 
     runned();
   }
+
+  private:
+    HX711_ADC Celula_Horizontal;
+    HX711_ADC Celula_FrontalDireita;
+    HX711_ADC Celula_FrontalEsquerda;
+    HX711_ADC Celula_TraseiraDireita;
+    HX711_ADC Celula_TraseiraEsquerda;
 };
