@@ -2,13 +2,13 @@
 #include <HX711_ADC.h>
 #include "Cell.h"
 
-class CellsThread: public Thread
+class CellBoardThread: public Thread
 {
 public:
   float calibrationTime = 5000; // tare preciscion can be improved by adding a few seconds of stabilising time
   std::vector<Cell> cells;
 
-  CellsThread() :
+  CellBoardThread() :
     cells{
       Cell(3, 4, 213.0, "Celula_Horizontal"),
       Cell(5, 6, 213.0, "Celula_FrontalDireita"),

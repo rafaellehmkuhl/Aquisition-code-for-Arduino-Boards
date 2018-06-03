@@ -5,7 +5,7 @@
 #include <ArduinoSTL.h>
 
 #include "PitotBoardThread.h"
-#include "CellsThread.h"
+#include "CellBoardThread.h"
 #include "BancadaFunctions.h"
 
 bool use_pitots = false;
@@ -27,7 +27,7 @@ std::vector<PitotBoardThread> pitot_boards = {
   PitotBoardThread(0x4B)
 };
 
-CellsThread celulas_bancada = CellsThread();
+CellBoardThread celulas_bancada = CellBoardThread();
 
 void setup(){
   Serial.begin(115200);
