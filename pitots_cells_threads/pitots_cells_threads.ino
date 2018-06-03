@@ -36,12 +36,10 @@ void setup(){
     for (PitotBoardThread& pitot_board : pitot_boards){
       pitot_board.setInterval(1);
       controller.add(&pitot_board);
-      pitot_board.initialize();
     }
   }
 
   if(use_cells){
-    celulas_bancada.initialize();
     celulas_bancada.setInterval(1);
     controller.add(&celulas_bancada);
   }

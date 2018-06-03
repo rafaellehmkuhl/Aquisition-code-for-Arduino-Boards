@@ -16,7 +16,10 @@ class PitotBoardThread: public Thread
         Pitot(1, "pitot1", ads),
         Pitot(2, "pitot2", ads),
         Pitot(3, "pitot3", ads)
-      }{}
+      }
+      {
+        initialize();
+      }
 
     void initialize(){
       ads.begin();

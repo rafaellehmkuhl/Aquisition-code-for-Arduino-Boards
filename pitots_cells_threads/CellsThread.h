@@ -15,7 +15,10 @@ public:
       Cell(7, 8, 213.0, "Celula_FrontalEsquerda"),
       Cell(9, 10, 213.0, "Celula_TraseiraDireita"),
       Cell(11, 12, 213.0, "Celula_TraseiraEsquerda")
-    }{}
+    }
+    {
+      initialize();
+    }
 
   void initialize(){
 
