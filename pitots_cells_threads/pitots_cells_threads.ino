@@ -4,7 +4,6 @@
 #include <ArduinoSTL.h>
 #include "PitotBoardThread.h"
 #include "CellBoardThread.h"
-#include "BancadaFunctions.h"
 
 bool use_pitots = false;
 bool use_cells = true;
@@ -12,7 +11,9 @@ bool print_pitots = false;
 bool print_cells = true;
 bool send_outside = false;
 
-BancadaFunctions bancada;
+static const byte numChars = 32;
+char receivedChars[numChars];
+bool newData = false;
 
 ThreadController controller = ThreadController();
 CellBoardThread cell_board = CellBoardThread();
@@ -33,8 +34,8 @@ void loop(){
   controller.run();
   printData();
   sendData();
-  bancada.receiveCommands();
-  bancada.interpretCommands(cell_board, print_pitots, print_cells, send_outside);
+  receiveCommands();
+  interpretCommands();
 }
 
 void initializeThreads(){
@@ -69,5 +70,52 @@ void sendData(){
       pitot_board.sendPitots();
     }
     cell_board.sendCells();
+  }
+}
+
+void receiveCommands() {
+  static bool recvInProgress = false;
+  static byte ndx = 0;
+  char startMarker = '!';
+  char endMarker = '@';
+  char rc;
+
+  while (Serial.available() && !newData) {
+    rc = Serial.read();
+
+    if (recvInProgress) {
+      if (rc != endMarker) {
+        receivedChars[ndx] = rc;
+        ndx++;
+        if (ndx >= numChars) {
+          ndx = numChars - 1;
+        }
+      }
+      else {
+        receivedChars[ndx] = '\0'; // terminate the string
+        recvInProgress = false;
+        ndx = 0;
+        newData = true;
+      }
+    }
+
+    else if (rc == startMarker) {
+      recvInProgress = true;
+    }
+  }
+}
+
+void interpretCommands(){
+  if (receivedChars == '!tare_cells@') {
+    cell_board.tareCells();
+  }
+  if (receivedChars == '!print_pitots@') {
+    print_pitots = !print_pitots;
+  }
+  if (receivedChars == '!print_cells@') {
+    print_cells = !print_cells;
+  }
+  if (receivedChars == '!send_outside@') {
+    send_outside = !send_outside;
   }
 }
