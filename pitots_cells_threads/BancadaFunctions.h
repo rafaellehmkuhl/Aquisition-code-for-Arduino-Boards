@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include <ArduinoSTL.h>
+#pragma once
 
 class BancadaFunctions
 {
@@ -8,6 +9,20 @@ public:
     char receivedChars[numChars];
     bool newData = false;
 
+    // void BancadaFunctions::interpretCommands(CellsThread &celulas_bancada, bool &print_pitots, bool &print_cells, bool &send_outside){
+    //     if (receivedChars == '!tare_cells@') {
+    //         celulas_bancada.tareCells();
+    //     }
+    //     if (receivedChars == '!print_pitots@') {
+    //         print_pitots = !print_pitots;
+    //     }
+    //     if (receivedChars == '!print_cells@') {
+    //         print_cells = !print_cells;
+    //     }
+    //     if (receivedChars == '!send_outside@') {
+    //         send_outside = !send_outside;
+    //     }
+    // }
 
     void BancadaFunctions::receiveCommands() {
         static bool recvInProgress = false;
