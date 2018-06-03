@@ -1,6 +1,6 @@
+#pragma once
 #include "Arduino.h"
 #include <ArduinoSTL.h>
-#pragma once
 
 class BancadaFunctions
 {

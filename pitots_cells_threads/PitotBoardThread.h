@@ -1,8 +1,8 @@
+#pragma once
 #include <Adafruit_ADS1015.h>
 #include <Wire.h>
 #include "Pitot.h"
 #include "BancadaFunctions.h"
-#pragma once
 
 class PitotBoardThread: public Thread
 {

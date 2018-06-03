@@ -1,3 +1,5 @@
+#pragma once
+
 class Cell: public HX711_ADC
 {
     public:

@@ -1,6 +1,6 @@
+#pragma once
 #include <HX711_ADC.h>
 #include "Cell.h"
-#pragma once
 
 class CellsThread: public Thread
 {
