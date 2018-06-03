@@ -79,6 +79,20 @@ public:
     runned();
   }
 
+  void printCells(){
+    for (Cell& cell : cells){
+      printf("%f\t", cell.force);
+    }
+  }
+
+  void sendCells(){
+    printf("!");
+    for (Cell& cell : cells){
+      printf("%s=%f;", cell.apelido.c_str(), cell.force);
+    }
+    printf("@\n");
+  }
+
   private:
     HX711_ADC Celula_Horizontal;
     HX711_ADC Celula_FrontalDireita;

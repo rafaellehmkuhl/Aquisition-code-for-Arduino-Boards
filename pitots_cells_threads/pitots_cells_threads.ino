@@ -79,17 +79,22 @@ void loop(){
   controller.run();
 
   if (print_pitots){
-    bancada.printPitots(numPitotBoards, pitots);
+    for (PitotBoardThread& pitot_board : pitot_boards){
+      pitot_board.printPitots();
+    }
   }
 
   if (print_cells){
-    bancada.printCells(celulas_bancada);
+    celulas_bancada.printCells();
   }
 
   printf("\n");
 
   if (send_outside){
-    bancada.sendDataViaProtocol(send_cells_via_protocol, send_pitots_via_protocol, numPitotBoards, pitots, celulas_bancada);
+    for (PitotBoardThread& pitot_board : pitot_boards){
+      pitot_board.sendPitots();
+    }
+    celulas_bancada.sendCells();
   }
 
   bancada.receiveCommands();
