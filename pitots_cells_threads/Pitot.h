@@ -10,8 +10,8 @@ class Pitot
         Adafruit_ADS1015 &ads;
         Pitot(int adc_port, String apelido, Adafruit_ADS1015 &ads){};
 
-    void updateVoltage(){
-        adc = ads.readADC_SingleEnded(adc_port);
-        Voltage = adc * 0.1875;
-    }
+        void updateVoltage(){
+            adc = ads.readADC_SingleEnded(adc_port);
+            Voltage = adc * 0.1875;
+        }
 };

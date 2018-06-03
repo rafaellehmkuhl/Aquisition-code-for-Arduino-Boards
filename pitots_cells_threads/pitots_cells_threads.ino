@@ -1,25 +1,21 @@
 #include <StaticThreadController.h>
-#include <Thread.h>
 #include <ThreadController.h>
-
+#include <Thread.h>
 #include <ArduinoSTL.h>
-
 #include "PitotBoardThread.h"
 #include "CellBoardThread.h"
 #include "BancadaFunctions.h"
 
 bool use_pitots = false;
-bool print_pitots = false;
-
 bool use_cells = true;
+bool print_pitots = false;
 bool print_cells = true;
-
 bool send_outside = false;
 
 BancadaFunctions bancada;
 
 ThreadController controller = ThreadController();
-
+CellBoardThread celulas_bancada = CellBoardThread();
 std::vector<PitotBoardThread> pitot_boards = {
   PitotBoardThread(0x48),
   PitotBoardThread(0x49),
@@ -27,7 +23,6 @@ std::vector<PitotBoardThread> pitot_boards = {
   PitotBoardThread(0x4B)
 };
 
-CellBoardThread celulas_bancada = CellBoardThread();
 
 void setup(){
   Serial.begin(115200);
@@ -46,7 +41,6 @@ void setup(){
 }
 
 void loop(){
-
   controller.run();
 
   if (print_pitots){
@@ -54,11 +48,9 @@ void loop(){
       pitot_board.printPitots();
     }
   }
-
   if (print_cells){
     celulas_bancada.printCells();
   }
-
   printf("\n");
 
   if (send_outside){
