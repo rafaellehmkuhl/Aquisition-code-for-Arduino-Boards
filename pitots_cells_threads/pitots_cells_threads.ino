@@ -26,7 +26,18 @@ std::vector<PitotBoardThread> pitot_boards = {
 
 void setup(){
   Serial.begin(115200);
+  initializeThreads();
+}
 
+void loop(){
+  controller.run();
+  printData();
+  sendData();
+  bancada.receiveCommands();
+  bancada.interpretCommands(cell_board, print_pitots, print_cells, send_outside);
+}
+
+void initializeThreads(){
   if (use_pitots){
     for (PitotBoardThread& pitot_board : pitot_boards){
       pitot_board.setInterval(1);
@@ -40,9 +51,7 @@ void setup(){
   }
 }
 
-void loop(){
-  controller.run();
-
+void printData(){
   if (print_pitots){
     for (PitotBoardThread& pitot_board : pitot_boards){
       pitot_board.printPitots();
@@ -52,14 +61,13 @@ void loop(){
     cell_board.printCells();
   }
   printf("\n");
+}
 
+void sendData(){
   if (send_outside){
     for (PitotBoardThread& pitot_board : pitot_boards){
       pitot_board.sendPitots();
     }
     cell_board.sendCells();
   }
-
-  bancada.receiveCommands();
-  bancada.interpretCommands(cell_board, print_pitots, print_cells, send_outside);
 }
