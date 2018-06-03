@@ -11,16 +11,12 @@ class PitotBoardThread: public Thread
 
     PitotBoardThread(byte adress) :
       ads(adress),
-      pitot0(0, "pitot0", ads),
-      pitot1(1, "pitot1", ads),
-      pitot2(2, "pitot2", ads),
-      pitot3(3, "pitot3", ads)
-      {
-        pitots.push_back(pitot0);
-        pitots.push_back(pitot1);
-        pitots.push_back(pitot2);
-        pitots.push_back(pitot3);
-      }
+      pitots{
+        Pitot(0, "pitot0", ads),
+        Pitot(1, "pitot1", ads),
+        Pitot(2, "pitot2", ads),
+        Pitot(3, "pitot3", ads)
+      }{}
 
     void initialize(){
       ads.begin();
@@ -51,8 +47,4 @@ class PitotBoardThread: public Thread
 
   private:
     Adafruit_ADS1015 ads;
-    Pitot pitot0;
-    Pitot pitot1;
-    Pitot pitot2;
-    Pitot pitot3;
 };
