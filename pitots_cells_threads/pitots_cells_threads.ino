@@ -61,5 +61,5 @@ void loop(){
   }
 
   bancada.receiveCommands();
-  // bancada.interpretCommands(celulas_bancada, print_pitots, print_cells, send_outside);
+  bancada.interpretCommands(celulas_bancada, print_pitots, print_cells, send_outside);
 }
