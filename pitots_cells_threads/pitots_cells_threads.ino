@@ -15,7 +15,7 @@ bool send_outside = false;
 BancadaFunctions bancada;
 
 ThreadController controller = ThreadController();
-CellBoardThread celulas_bancada = CellBoardThread();
+CellBoardThread cell_board = CellBoardThread();
 std::vector<PitotBoardThread> pitot_boards = {
   PitotBoardThread(0x48),
   PitotBoardThread(0x49),
@@ -35,8 +35,8 @@ void setup(){
   }
 
   if(use_cells){
-    celulas_bancada.setInterval(1);
-    controller.add(&celulas_bancada);
+    cell_board.setInterval(1);
+    controller.add(&cell_board);
   }
 }
 
@@ -49,7 +49,7 @@ void loop(){
     }
   }
   if (print_cells){
-    celulas_bancada.printCells();
+    cell_board.printCells();
   }
   printf("\n");
 
@@ -57,9 +57,9 @@ void loop(){
     for (PitotBoardThread& pitot_board : pitot_boards){
       pitot_board.sendPitots();
     }
-    celulas_bancada.sendCells();
+    cell_board.sendCells();
   }
 
   bancada.receiveCommands();
-  bancada.interpretCommands(celulas_bancada, print_pitots, print_cells, send_outside);
+  bancada.interpretCommands(cell_board, print_pitots, print_cells, send_outside);
 }

@@ -10,9 +10,9 @@ public:
     char receivedChars[numChars];
     bool newData = false;
 
-    void BancadaFunctions::interpretCommands(CellBoardThread &celulas_bancada, bool &print_pitots, bool &print_cells, bool &send_outside){
+    void BancadaFunctions::interpretCommands(CellBoardThread &cell_board, bool &print_pitots, bool &print_cells, bool &send_outside){
         if (receivedChars == '!tare_cells@') {
-            celulas_bancada.tareCells();
+            cell_board.tareCells();
         }
         if (receivedChars == '!print_pitots@') {
             print_pitots = !print_pitots;
