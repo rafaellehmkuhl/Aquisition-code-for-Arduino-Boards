@@ -106,16 +106,19 @@ void receiveCommands() {
 }
 
 void interpretCommands(){
-  if (receivedChars == '!tare_cells@') {
-    cell_board.tareCells();
-  }
-  if (receivedChars == '!print_pitots@') {
-    print_pitots = !print_pitots;
-  }
-  if (receivedChars == '!print_cells@') {
-    print_cells = !print_cells;
-  }
-  if (receivedChars == '!send_outside@') {
-    send_outside = !send_outside;
+  if (newData){
+    if (strcmp(receivedChars, "tc") == 0) {
+      cell_board.tareCells();
+    }
+    if (strcmp(receivedChars, "pp") == 0) {
+      print_pitots = !print_pitots;
+    }
+    if (strcmp(receivedChars, "pc") == 0) {
+      print_cells = !print_cells;
+    }
+    if (strcmp(receivedChars, "so") == 0) {
+      send_outside = !send_outside;
+    }
+    newData = false;
   }
 }
