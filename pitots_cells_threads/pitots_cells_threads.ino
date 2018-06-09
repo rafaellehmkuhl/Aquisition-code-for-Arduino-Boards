@@ -5,23 +5,23 @@
 #include "PitotBoardThread.h"
 #include "CellBoardThread.h"
 
-bool use_pitots = false;
+bool use_pitots = true;
 bool use_cells = true;
-bool print_pitots = false;
+bool print_pitots = true;
 bool print_cells = true;
-bool send_outside = false;
+bool send_outside = true;
 
 static const byte numChars = 32;
 char receivedChars[numChars];
 bool newData = false;
 
 ThreadController controller = ThreadController();
-CellBoardThread cell_board = CellBoardThread();
-std::vector<PitotBoardThread> pitot_boards = {
-  PitotBoardThread(0x48),
-  PitotBoardThread(0x49),
-  PitotBoardThread(0x4A),
-  PitotBoardThread(0x4B)
+CellBoardThread* cell_board = new CellBoardThread();
+std::vector<PitotBoardThread*> pitot_boards = {
+  new PitotBoardThread(0x48),
+  new PitotBoardThread(0x49),
+  new PitotBoardThread(0x4A),
+  new PitotBoardThread(0x4B)
 };
 
 
@@ -40,36 +40,36 @@ void loop(){
 
 void initializeThreads(){
   if (use_pitots){
-    for (PitotBoardThread& pitot_board : pitot_boards){
-      pitot_board.setInterval(1);
-      controller.add(&pitot_board);
+    for (auto pitot_board : pitot_boards){
+      pitot_board->setInterval(1);
+      controller.add(pitot_board);
     }
   }
 
   if(use_cells){
-    cell_board.setInterval(1);
-    controller.add(&cell_board);
+    cell_board->setInterval(1);
+    controller.add(cell_board);
   }
 }
 
 void printData(){
   if (print_pitots){
-    for (PitotBoardThread& pitot_board : pitot_boards){
-      pitot_board.printPitots();
+    for (auto pitot_board : pitot_boards){
+      pitot_board->printPitots();
     }
   }
   if (print_cells){
-    cell_board.printCells();
+    cell_board->printCells();
   }
   printf("\n");
 }
 
 void sendData(){
   if (send_outside){
-    for (PitotBoardThread& pitot_board : pitot_boards){
-      pitot_board.sendPitots();
+    for (auto pitot_board : pitot_boards){
+      pitot_board->sendPitots();
     }
-    cell_board.sendCells();
+    cell_board->sendCells();
   }
 }
 
@@ -108,7 +108,6 @@ void receiveCommands() {
 void interpretCommands(){
   if (newData){
     if (strcmp(receivedChars, "tc") == 0) {
-      cell_board.tareCells();
     }
     if (strcmp(receivedChars, "pp") == 0) {
       print_pitots = !print_pitots;

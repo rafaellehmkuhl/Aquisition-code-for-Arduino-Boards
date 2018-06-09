@@ -6,15 +6,15 @@
 class PitotBoardThread: public Thread
 {
   public:
-    std::vector<Pitot> pitots;
+    std::vector<Pitot*> pitots;
 
     PitotBoardThread(byte adress) :
       ads(adress),
       pitots{
-        Pitot(0, "pitot0", ads),
-        Pitot(1, "pitot1", ads),
-        Pitot(2, "pitot2", ads),
-        Pitot(3, "pitot3", ads)
+        new Pitot(0, "pitot0", ads),
+        new Pitot(1, "pitot1", ads),
+        new Pitot(2, "pitot2", ads),
+        new Pitot(3, "pitot3", ads)
       }
       {
         initialize();
@@ -25,8 +25,8 @@ class PitotBoardThread: public Thread
     }
 
     void run(){
-      for (Pitot& pitot : pitots){
-        pitot.updateVoltage();
+      for (auto pitot : pitots){
+        pitot->updateVoltage();
       }
 
       runned();
@@ -34,15 +34,15 @@ class PitotBoardThread: public Thread
 
     void printPitots(){
 
-      for (Pitot& pitot : pitots){
-        printf("%f\t", pitot.Voltage);
+      for (auto pitot : pitots){
+        printf("%f\t", pitot->Voltage);
       }
     }
 
     void sendPitots(){
       printf("!");
-      for (Pitot& pitot : pitots){
-        printf("%s=%f;", pitot.apelido.c_str(), pitot.Voltage);
+      for (auto pitot : pitots){
+        printf("%s=%f;", pitot->apelido.c_str(), pitot->Voltage);
       }
       printf("@\n");
     }
