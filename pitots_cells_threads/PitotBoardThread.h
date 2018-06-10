@@ -11,10 +11,10 @@ class PitotBoardThread: public Thread
     PitotBoardThread(byte adress) :
       ads(adress),
       pitots{
-        new Pitot(0, "pitot0", ads),
-        new Pitot(1, "pitot1", ads),
-        new Pitot(2, "pitot2", ads),
-        new Pitot(3, "pitot3", ads)
+        new Pitot(0, "P00", ads),
+        new Pitot(1, "P01", ads),
+        new Pitot(2, "P02", ads),
+        new Pitot(3, "P03", ads)
       }
       {
         initialize();

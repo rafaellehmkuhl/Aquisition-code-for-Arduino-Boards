@@ -10,11 +10,11 @@ public:
 
   CellBoardThread() :
     cells{
-      new Cell(3, 4, 213.0, "Celula_Horizontal"),
-      new Cell(5, 6, 213.0, "Celula_FrontalDireita"),
-      new Cell(7, 8, 213.0, "Celula_FrontalEsquerda"),
-      new Cell(9, 10, 213.0, "Celula_TraseiraDireita"),
-      new Cell(11, 12, 213.0, "Celula_TraseiraEsquerda")
+      new Cell(3, 4, 213.0, "CH"),
+      new Cell(5, 6, 213.0, "CFD"),
+      new Cell(7, 8, 213.0, "CFE"),
+      new Cell(9, 10, 213.0, "CTD"),
+      new Cell(11, 12, 213.0, "CTE")
     }
     {
       initialize();
