@@ -80,5 +80,5 @@ public:
     printf("@\n");
   }
   private:
-    bool _cells_ready = 0;
+    int _cells_ready = 0;
 };
