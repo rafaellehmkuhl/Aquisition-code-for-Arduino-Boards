@@ -108,6 +108,7 @@ void receiveCommands() {
 void interpretCommands(){
   if (newData){
     if (strcmp(receivedChars, "tc") == 0) {
+      cell_board->tareCells();
     }
     if (strcmp(receivedChars, "pp") == 0) {
       print_pitots = !print_pitots;
