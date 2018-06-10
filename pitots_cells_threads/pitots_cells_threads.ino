@@ -399,10 +399,10 @@ void receiveCommands() {
   char endMarker = '@';
   char rc;
 
-  while (Serial.available() > 0 && newData == false) {
+  while (Serial.available() && !newData) {
     rc = Serial.read();
 
-    if (recvInProgress == true) {
+    if (recvInProgress) {
       if (rc != endMarker) {
         receivedChars[ndx] = rc;
         ndx++;
