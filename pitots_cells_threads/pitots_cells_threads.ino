@@ -56,7 +56,7 @@ public:
       adc = ads3.readADC_SingleEnded(adc_port);
     }
 
-    Voltage = (adc * 0.1875)/1000;
+    Voltage = (adc * 0.1875);
     runned();
   }
 };
@@ -305,28 +305,28 @@ void interpretCommands(){
 
 void printPitots(){
   if (numPitotBoards >= 1){
-    printTabbed(1000*pitot0.Voltage);
-    printTabbed(1000*pitot1.Voltage);
-    printTabbed(1000*pitot2.Voltage);
-    printTabbed(1000*pitot3.Voltage);
+    printTabbed(pitot0.Voltage);
+    printTabbed(pitot1.Voltage);
+    printTabbed(pitot2.Voltage);
+    printTabbed(pitot3.Voltage);
   }
   if (numPitotBoards >= 2){
-    printTabbed(1000*pitot4.Voltage);
-    printTabbed(1000*pitot5.Voltage);
-    printTabbed(1000*pitot6.Voltage);
-    printTabbed(1000*pitot7.Voltage);
+    printTabbed(pitot4.Voltage);
+    printTabbed(pitot5.Voltage);
+    printTabbed(pitot6.Voltage);
+    printTabbed(pitot7.Voltage);
   }
   if (numPitotBoards >= 3){
-    printTabbed(1000*pitot8.Voltage);
-    printTabbed(1000*pitot9.Voltage);
-    printTabbed(1000*pitot10.Voltage);
-    printTabbed(1000*pitot11.Voltage);
+    printTabbed(pitot8.Voltage);
+    printTabbed(pitot9.Voltage);
+    printTabbed(pitot10.Voltage);
+    printTabbed(pitot11.Voltage);
   }
   if (numPitotBoards >= 4){
-    printTabbed(1000*pitot12.Voltage);
-    printTabbed(1000*pitot13.Voltage);
-    printTabbed(1000*pitot14.Voltage);
-    printTabbed(1000*pitot15.Voltage);
+    printTabbed(pitot12.Voltage);
+    printTabbed(pitot13.Voltage);
+    printTabbed(pitot14.Voltage);
+    printTabbed(pitot15.Voltage);
   }
 }
 
@@ -357,28 +357,28 @@ void sendDataViaProtocol(){
 
   if(send_pitots_via_protocol){
     if (numPitotBoards >= 1){
-      printProtocolled("pitot0", 1000*pitot0.Voltage);
-      printProtocolled("pitot1", 1000*pitot1.Voltage);
-      printProtocolled("pitot2", 1000*pitot2.Voltage);
-      printProtocolled("pitot3", 1000*pitot3.Voltage);
+      printProtocolled("pitot0", pitot0.Voltage);
+      printProtocolled("pitot1", pitot1.Voltage);
+      printProtocolled("pitot2", pitot2.Voltage);
+      printProtocolled("pitot3", pitot3.Voltage);
     }
     if (numPitotBoards >= 2){
-      printProtocolled("pitot4", 1000*pitot4.Voltage);
-      printProtocolled("pitot5", 1000*pitot5.Voltage);
-      printProtocolled("pitot6", 1000*pitot6.Voltage);
-      printProtocolled("pitot7", 1000*pitot7.Voltage);
+      printProtocolled("pitot4", pitot4.Voltage);
+      printProtocolled("pitot5", pitot5.Voltage);
+      printProtocolled("pitot6", pitot6.Voltage);
+      printProtocolled("pitot7", pitot7.Voltage);
     }
     if (numPitotBoards >= 3){
-      printProtocolled("pitot8", 1000*pitot8.Voltage);
-      printProtocolled("pitot9", 1000*pitot9.Voltage);
-      printProtocolled("pitot10", 1000*pitot10.Voltage);
-      printProtocolled("pitot11", 1000*pitot11.Voltage);
+      printProtocolled("pitot8", pitot8.Voltage);
+      printProtocolled("pitot9", pitot9.Voltage);
+      printProtocolled("pitot10", pitot10.Voltage);
+      printProtocolled("pitot11", pitot11.Voltage);
     }
     if (numPitotBoards >= 4){
-      printProtocolled("pitot12", 1000*pitot12.Voltage);
-      printProtocolled("pitot13", 1000*pitot13.Voltage);
-      printProtocolled("pitot14", 1000*pitot14.Voltage);
-      printProtocolled("pitot15", 1000*pitot15.Voltage);
+      printProtocolled("pitot12", pitot12.Voltage);
+      printProtocolled("pitot13", pitot13.Voltage);
+      printProtocolled("pitot14", pitot14.Voltage);
+      printProtocolled("pitot15", pitot15.Voltage);
     }
   }
 
