@@ -41,13 +41,13 @@ void loop(){
 void initializeThreads(){
   if (use_pitots){
     for (auto pitot_board : pitot_boards){
-      pitot_board->setInterval(1);
+      pitot_board->setInterval(10);
       controller.add(pitot_board);
     }
   }
 
   if(use_cells){
-    cell_board->setInterval(1);
+    cell_board->setInterval(50);
     controller.add(cell_board);
   }
 }
