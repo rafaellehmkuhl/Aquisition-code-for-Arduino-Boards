@@ -19,9 +19,9 @@ ThreadController controller = ThreadController();
 CellBoardThread* cell_board = new CellBoardThread();
 std::vector<PitotBoardThread*> pitot_boards = {
   new PitotBoardThread(0x48),
-  new PitotBoardThread(0x49),
-  new PitotBoardThread(0x4A),
-  new PitotBoardThread(0x4B)
+//  new PitotBoardThread(0x49),
+//  new PitotBoardThread(0x4A),
+//  new PitotBoardThread(0x4B)
 };
 
 
