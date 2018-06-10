@@ -3,10 +3,10 @@
 class Pitot
 {
     public:
+        String apelido;
         float Voltage = 0.0;
         int16_t adc = 0;
         int adc_port;
-        String apelido;
         Adafruit_ADS1015 &ads;
         Pitot(int adc_port, String apelido, Adafruit_ADS1015 &ads){};
 
