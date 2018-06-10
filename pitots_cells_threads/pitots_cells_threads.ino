@@ -10,16 +10,16 @@ const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
 
-boolean use_pitots = false;
+boolean use_pitots = true;
 boolean print_pitots = false;
-boolean send_pitots_via_protocol = false;
+boolean send_pitots_via_protocol = true;
 int numPitotBoards = 1;
 
 boolean use_cells = true;
-boolean print_cells = true;
-boolean send_cells_via_protocol = false;
+boolean print_cells = false;
+boolean send_cells_via_protocol = true;
 
-boolean send_outside = false;
+boolean send_outside = true;
 
 //ADS1015 constructor
 Adafruit_ADS1015 ads0(0x48);
