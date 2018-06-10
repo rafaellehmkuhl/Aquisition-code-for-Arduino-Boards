@@ -5,11 +5,11 @@
 #include "PitotBoardThread.h"
 #include "CellBoardThread.h"
 
-bool use_pitots = true;
+bool use_pitots = false;
 bool use_cells = true;
-bool print_pitots = true;
+bool print_pitots = false;
 bool print_cells = true;
-bool send_outside = true;
+bool send_outside = false;
 
 static const byte numChars = 32;
 char receivedChars[numChars];
