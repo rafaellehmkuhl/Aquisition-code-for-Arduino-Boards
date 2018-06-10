@@ -17,7 +17,7 @@ bool newData = false;
 
 ThreadController controller = ThreadController();
 CellBoardThread* cell_board = new CellBoardThread();
-PitotBoardThread* pitot_boards[2] = {
+PitotBoardThread* pitot_boards[1] = {
   new PitotBoardThread(0x48),
 //  new PitotBoardThread(0x49),
 //  new PitotBoardThread(0x4A),
