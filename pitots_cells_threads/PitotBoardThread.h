@@ -6,7 +6,7 @@
 class PitotBoardThread: public Thread
 {
   public:
-    std::vector<Pitot*> pitots;
+    Pitot* pitots[4];
 
     PitotBoardThread(byte adress) :
       ads(adress),

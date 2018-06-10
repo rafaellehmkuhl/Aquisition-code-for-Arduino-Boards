@@ -6,7 +6,7 @@ class CellBoardThread: public Thread
 {
 public:
   float calibrationTime = 5000; // tare preciscion can be improved by adding a few seconds of stabilising time
-  std::vector<Cell*> cells;
+  Cell* cells[5];
 
   CellBoardThread() :
     cells{
