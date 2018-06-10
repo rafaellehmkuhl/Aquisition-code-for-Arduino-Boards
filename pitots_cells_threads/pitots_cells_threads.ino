@@ -285,17 +285,20 @@ void loop(){
 }
 
 void interpretCommands(){
-  if (receivedChars == '!tare_cells@') {
-    celulas_bancada.tareCells();
-  }
-  if (receivedChars == '!print_pitots@') {
-    print_pitots = !print_pitots;
-  }
-  if (receivedChars == '!print_cells@') {
-    print_cells = !print_cells;
-  }
-  if (receivedChars == '!send_outside@') {
-    send_outside = !send_outside;
+  if (newData){
+    if (strcmp(receivedChars, "tc") == 0) {
+      celulas_bancada.tareCells();
+    }
+    if (strcmp(receivedChars, "pp") == 0) {
+      print_pitots = !print_pitots;
+    }
+    if (strcmp(receivedChars, "pc") == 0) {
+      print_cells = !print_cells;
+    }
+    if (strcmp(receivedChars, "so") == 0) {
+      send_outside = !send_outside;
+    }
+    newData = false;
   }
 }
 
