@@ -352,28 +352,28 @@ void sendDataViaProtocol(){
   printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
 
   if (numPitotBoards >= 1){
-    printProtocolled("pitot0", pitot0.Voltage);
-    printProtocolled("pitot1", pitot1.Voltage);
-    printProtocolled("pitot2", pitot2.Voltage);
-    printProtocolled("pitot3", pitot3.Voltage);
+    printProtocolled("pt0", pitot0.Voltage);
+    printProtocolled("pt1", pitot1.Voltage);
+    printProtocolled("pt2", pitot2.Voltage);
+    printProtocolled("pt3", pitot3.Voltage);
   }
   if (numPitotBoards >= 2){
-    printProtocolled("pitot4", pitot4.Voltage);
-    printProtocolled("pitot5", pitot5.Voltage);
-    printProtocolled("pitot6", pitot6.Voltage);
-    printProtocolled("pitot7", pitot7.Voltage);
+    printProtocolled("pt4", pitot4.Voltage);
+    printProtocolled("pt5", pitot5.Voltage);
+    printProtocolled("pt6", pitot6.Voltage);
+    printProtocolled("pt7", pitot7.Voltage);
   }
   if (numPitotBoards >= 3){
-    printProtocolled("pitot8", pitot8.Voltage);
-    printProtocolled("pitot9", pitot9.Voltage);
-    printProtocolled("pitot10", pitot10.Voltage);
-    printProtocolled("pitot11", pitot11.Voltage);
+    printProtocolled("pt8", pitot8.Voltage);
+    printProtocolled("pt9", pitot9.Voltage);
+    printProtocolled("pt10", pitot10.Voltage);
+    printProtocolled("pt11", pitot11.Voltage);
   }
   if (numPitotBoards >= 4){
-    printProtocolled("pitot12", pitot12.Voltage);
-    printProtocolled("pitot13", pitot13.Voltage);
-    printProtocolled("pitot14", pitot14.Voltage);
-    printProtocolled("pitot15", pitot15.Voltage);
+    printProtocolled("pt12", pitot12.Voltage);
+    printProtocolled("pt13", pitot13.Voltage);
+    printProtocolled("pt14", pitot14.Voltage);
+    printProtocolled("pt15", pitot15.Voltage);
   }
 
   Serial.println("@");
