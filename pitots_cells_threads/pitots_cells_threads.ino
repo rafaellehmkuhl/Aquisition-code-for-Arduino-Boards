@@ -20,10 +20,10 @@ boolean print_cells = false;
 boolean send_outside = true;
 
 //ADS1015 constructor
-Adafruit_ADS1015 ads0(0x48);
-Adafruit_ADS1015 ads1(0x49);
-Adafruit_ADS1015 ads2(0x4A);
-Adafruit_ADS1015 ads3(0x4B);
+Adafruit_ADS1115 ads0(0x48);
+Adafruit_ADS1115 ads1(0x49);
+Adafruit_ADS1115 ads2(0x4A);
+Adafruit_ADS1115 ads3(0x4B);
 
 //HX711 constructor (DT pin, SCK pin)
 HX711_ADC Celula_Horizontal(3, 4);
