@@ -272,7 +272,9 @@ void loop(){
     printCells();
   }
 
-  Serial.println();
+  if (print_pitots ||  print_cells){
+    Serial.println();
+  }
 
   if (send_outside){
     sendDataViaProtocol();
