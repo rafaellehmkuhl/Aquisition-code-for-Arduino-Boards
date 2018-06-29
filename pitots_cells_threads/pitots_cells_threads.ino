@@ -1,7 +1,6 @@
 #include <StaticThreadController.h>
 #include <ThreadController.h>
 #include <Thread.h>
-#include <ArduinoSTL.h>
 #include "PitotBoardThread.h"
 #include "CellBoardThread.h"
 
