@@ -10,7 +10,7 @@ const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
 
-boolean use_pitots = true;
+boolean use_pitots = false;
 boolean print_pitots = false;
 int numPitotBoards = 1;
 
