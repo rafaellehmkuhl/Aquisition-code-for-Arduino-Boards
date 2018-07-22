@@ -93,11 +93,11 @@ public:
     }
 
     // Calibrate cells
-    Celula_Horizontal.setCalFactor(629.0); // user set calibration factor (float)
-    Celula_FrontalDireita.setCalFactor(217.0); // user set calibration factor (float)
-    Celula_FrontalEsquerda.setCalFactor(192.0); // user set calibration factor (float)
-    Celula_TraseiraDireita.setCalFactor(211.0); // user set calibration factor (float)
-    Celula_TraseiraEsquerda.setCalFactor(210.0); // user set calibration factor (float)
+    Celula_Horizontal.setCalFactor(1.0); // user set calibration factor (float)
+    Celula_FrontalDireita.setCalFactor(1.0); // user set calibration factor (float)
+    Celula_FrontalEsquerda.setCalFactor(1.0); // user set calibration factor (float)
+    Celula_TraseiraDireita.setCalFactor(1.0); // user set calibration factor (float)
+    Celula_TraseiraEsquerda.setCalFactor(1.0); // user set calibration factor (float)
 
     Serial.println("Startup and tare are complete");
   }
