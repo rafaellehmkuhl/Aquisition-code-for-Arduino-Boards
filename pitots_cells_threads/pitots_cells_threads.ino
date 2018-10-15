@@ -19,6 +19,8 @@ boolean print_cells = false;
 
 boolean send_outside = true;
 
+float checksum = 0;
+
 //ADS1015 constructor
 Adafruit_ADS1115 ads0(0x48);
 Adafruit_ADS1115 ads1(0x49);
@@ -378,7 +380,16 @@ void sendDataViaProtocol(){
     printProtocolled("pt15", pitot15.Voltage);
   }
 
+  printChecksum("cks", checksum);
+
   Serial.println("@");
+}
+
+void printChecksum(String apelido, float value){
+  Serial.print(apelido);
+  Serial.print("=");
+  Serial.print(value);
+  checksum = 0;
 }
 
 void printProtocolled(String apelido, float value){
@@ -386,6 +397,8 @@ void printProtocolled(String apelido, float value){
   Serial.print("=");
   Serial.print(value);
   Serial.print(";");
+
+  checksum += value;
 }
 
 void receiveCommands() {
