@@ -6,6 +6,8 @@
 #include <Adafruit_ADS1015.h>
 #include <HX711_ADC.h>
 #include <MS5611.h>
+#include "I2Cdev.h"
+#include "MPU6050.h"
 
 const byte numChars = 32;
 char receivedChars[numChars];
@@ -21,9 +23,15 @@ boolean print_cells = false;
 boolean use_baro = true;
 boolean print_baro = false;
 
+boolean use_accgyro = true;
+boolean print_accgyro = false;
+
 boolean send_outside = true;
 
 float checksum = 0;
+
+//MPU6050 constructor
+MPU6050 accelgyro;
 
 //MS5611 constructor
 MS5611 baro;
@@ -40,6 +48,34 @@ HX711_ADC Celula_FrontalDireita(5, 6);
 HX711_ADC Celula_FrontalEsquerda(7, 8);
 HX711_ADC Celula_TraseiraDireita(9, 10);
 HX711_ADC Celula_TraseiraEsquerda(11, 12);
+
+class AccGyroThread: public Thread
+{
+public:
+
+  int16_t ax, ay, az;
+  int16_t gx, gy, gz;
+
+  float ax_f, ay_f, az_f;
+  float gx_f, gy_f, gz_f;
+
+  void initializeAccGyro(){
+    accelgyro.initialize();
+  }
+
+  void run(){
+    accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+    ax_f = ax/1670.0; 
+    ay_f = ay/1670.0; 
+    az_f = az/1670.0;
+    gx_f = gx/262.0;
+    gy_f = gy/262.0;
+    gz_f = gz/262.0;
+    
+    runned();
+  }
+};
 
 class BaroThread: public Thread
 {
@@ -179,6 +215,7 @@ PitotThread pitot14 = PitotThread();
 PitotThread pitot15 = PitotThread();
 CellsThread celulas_bancada = CellsThread();
 BaroThread barometer = BaroThread();
+AccGyroThread accgyro = AccGyroThread();
 
 void setup(){
   Serial.begin(115200);
@@ -294,6 +331,12 @@ void setup(){
     barometer.setInterval(1);
     controller.add(&barometer);
   }
+
+  if(use_accgyro == true){
+    accgyro.initializeAccGyro();
+    accgyro.setInterval(1);
+    controller.add(&accgyro);
+  }
 }
 
 void loop(){
@@ -312,7 +355,11 @@ void loop(){
     printBaro();
   }
 
-  if (print_pitots ||  print_cells || print_baro){
+  if (print_accgyro){
+    printAccGyro();
+  }
+
+  if (print_pitots ||  print_cells || print_baro || print_accgyro){
     Serial.println();
   }
 
@@ -383,6 +430,15 @@ void printBaro(){
   printTabbed(barometer.temperature);
 }
 
+void printAccGyro(){
+  printTabbed(accgyro.ax_f);
+  printTabbed(accgyro.ay_f);
+  printTabbed(accgyro.az_f);
+  printTabbed(accgyro.gx_f);
+  printTabbed(accgyro.gy_f);
+  printTabbed(accgyro.gz_f);
+}
+
 void printTabbed(float value){
   Serial.print(value);
   Serial.print("\t");
@@ -425,6 +481,13 @@ void sendDataViaProtocol(){
 
   printProtocolled("prs", barometer.pressure);
   printProtocolled("tmp", barometer.temperature);
+
+  printProtocolled("acx", accgyro.ax_f);
+  printProtocolled("acy", accgyro.ay_f);
+  printProtocolled("acz", accgyro.az_f);
+  printProtocolled("gyx", accgyro.gx_f);
+  printProtocolled("gyy", accgyro.gy_f);
+  printProtocolled("gyz", accgyro.gz_f);
 
   printChecksum("cks", checksum);
 
