@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <Adafruit_ADS1015.h>
 #include <HX711_ADC.h>
+#include <MS5611.h>
 
 const byte numChars = 32;
 char receivedChars[numChars];
@@ -17,9 +18,15 @@ int numPitotBoards = 1;
 boolean use_cells = true;
 boolean print_cells = false;
 
+boolean use_baro = true;
+boolean print_baro = false;
+
 boolean send_outside = true;
 
 float checksum = 0;
+
+//MS5611 constructor
+MS5611 baro;
 
 //ADS1015 constructor
 Adafruit_ADS1115 ads0(0x48);
@@ -33,6 +40,26 @@ HX711_ADC Celula_FrontalDireita(5, 6);
 HX711_ADC Celula_FrontalEsquerda(7, 8);
 HX711_ADC Celula_TraseiraDireita(9, 10);
 HX711_ADC Celula_TraseiraEsquerda(11, 12);
+
+class BaroThread: public Thread
+{
+public:
+
+  float pressure;
+  float temperature;
+
+  void initializeBaro(){
+    baro = MS5611();
+    baro.begin();
+  }
+
+  void run(){
+    pressure = baro.getPressure() / 1000.0;
+    temperature = baro.getTemperature() / 100.0;
+    
+    runned();
+  }
+};
 
 class PitotThread: public Thread
 {
@@ -151,6 +178,7 @@ PitotThread pitot13 = PitotThread();
 PitotThread pitot14 = PitotThread();
 PitotThread pitot15 = PitotThread();
 CellsThread celulas_bancada = CellsThread();
+BaroThread barometer = BaroThread();
 
 void setup(){
   Serial.begin(115200);
@@ -260,6 +288,12 @@ void setup(){
     celulas_bancada.setInterval(1);
     controller.add(&celulas_bancada);
   }
+
+  if(use_baro == true){
+    barometer.initializeBaro();
+    barometer.setInterval(1);
+    controller.add(&barometer);
+  }
 }
 
 void loop(){
@@ -274,7 +308,11 @@ void loop(){
     printCells();
   }
 
-  if (print_pitots ||  print_cells){
+  if (print_baro){
+    printBaro();
+  }
+
+  if (print_pitots ||  print_cells || print_baro){
     Serial.println();
   }
 
@@ -340,6 +378,11 @@ void printCells(){
   printTabbed(celulas_bancada.forca_traseira_esquerda);
 }
 
+void printBaro(){
+  printTabbed(barometer.pressure);
+  printTabbed(barometer.temperature);
+}
+
 void printTabbed(float value){
   Serial.print(value);
   Serial.print("\t");
@@ -379,6 +422,9 @@ void sendDataViaProtocol(){
     printProtocolled("pt14", pitot14.Voltage);
     printProtocolled("pt15", pitot15.Voltage);
   }
+
+  printProtocolled("prs", barometer.pressure);
+  printProtocolled("tmp", barometer.temperature);
 
   printChecksum("cks", checksum);
 
