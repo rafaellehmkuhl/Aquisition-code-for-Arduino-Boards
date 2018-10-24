@@ -20,7 +20,7 @@ int numPitotBoards = 1;
 boolean use_cells = true;
 boolean print_cells = false;
 
-boolean use_baro = true;
+boolean use_baro = false;
 boolean print_baro = false;
 
 boolean use_accgyro = true;
@@ -29,6 +29,9 @@ boolean print_accgyro = false;
 boolean send_outside = true;
 
 float checksum = 0;
+
+float previousTime = 0;
+boolean print_time = false;
 
 //MPU6050 constructor
 MPU6050 accelgyro;
@@ -369,6 +372,11 @@ void loop(){
 
   receiveCommands();
   interpretCommands();
+
+  if (print_time) {
+    Serial.println(1000.0 / (millis() - previousTime));
+    previousTime = millis(); 
+  }
 }
 
 void interpretCommands(){
