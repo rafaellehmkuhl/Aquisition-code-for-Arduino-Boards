@@ -12,6 +12,7 @@
 const byte numChars = 32;
 char receivedChars[numChars];
 boolean newData = false;
+boolean can_send = true;
 
 boolean use_pitots = true;
 boolean print_pitots = false;
@@ -393,6 +394,9 @@ void interpretCommands(){
     if (strcmp(receivedChars, "so") == 0) {
       send_outside = !send_outside;
     }
+    if (strcmp(receivedChars, "cs") == 0) {
+      can_send = true;
+    }
     newData = false;
   }
 }
@@ -454,52 +458,56 @@ void printTabbed(float value){
 
 void sendDataViaProtocol(){
 
-  Serial.print("!");
+  if (can_send) {
+    Serial.print("!");
 
-  printProtocolled("fh", celulas_bancada.forca_horizontal);
-  printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
-  printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
-  printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
-  printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
+    printProtocolled("fh", celulas_bancada.forca_horizontal);
+    printProtocolled("ffd", celulas_bancada.forca_frontal_direita);
+    printProtocolled("ffe", celulas_bancada.forca_frontal_esquerda);
+    printProtocolled("ftd", celulas_bancada.forca_traseira_direita);
+    printProtocolled("fte", celulas_bancada.forca_traseira_esquerda);
 
-  if (numPitotBoards >= 1){
-    printProtocolled("pt0", pitot0.Voltage);
-    printProtocolled("pt1", pitot1.Voltage);
-    printProtocolled("pt2", pitot2.Voltage);
-    printProtocolled("pt3", pitot3.Voltage);
+    if (numPitotBoards >= 1){
+      printProtocolled("pt0", pitot0.Voltage);
+      printProtocolled("pt1", pitot1.Voltage);
+      printProtocolled("pt2", pitot2.Voltage);
+      printProtocolled("pt3", pitot3.Voltage);
+    }
+    if (numPitotBoards >= 2){
+      printProtocolled("pt4", pitot4.Voltage);
+      printProtocolled("pt5", pitot5.Voltage);
+      printProtocolled("pt6", pitot6.Voltage);
+      printProtocolled("pt7", pitot7.Voltage);
+    }
+    if (numPitotBoards >= 3){
+      printProtocolled("pt8", pitot8.Voltage);
+      printProtocolled("pt9", pitot9.Voltage);
+      printProtocolled("pt10", pitot10.Voltage);
+      printProtocolled("pt11", pitot11.Voltage);
+    }
+    if (numPitotBoards >= 4){
+      printProtocolled("pt12", pitot12.Voltage);
+      printProtocolled("pt13", pitot13.Voltage);
+      printProtocolled("pt14", pitot14.Voltage);
+      printProtocolled("pt15", pitot15.Voltage);
+    }
+
+    printProtocolled("prs", barometer.pressure);
+    printProtocolled("tmp", barometer.temperature);
+
+    printProtocolled("acx", accgyro.ax_f);
+    printProtocolled("acy", accgyro.ay_f);
+    printProtocolled("acz", accgyro.az_f);
+    printProtocolled("gyx", accgyro.gx_f);
+    printProtocolled("gyy", accgyro.gy_f);
+    printProtocolled("gyz", accgyro.gz_f);
+
+    printChecksum("cks", checksum);
+
+    Serial.println("@");
+
+    can_send = false;
   }
-  if (numPitotBoards >= 2){
-    printProtocolled("pt4", pitot4.Voltage);
-    printProtocolled("pt5", pitot5.Voltage);
-    printProtocolled("pt6", pitot6.Voltage);
-    printProtocolled("pt7", pitot7.Voltage);
-  }
-  if (numPitotBoards >= 3){
-    printProtocolled("pt8", pitot8.Voltage);
-    printProtocolled("pt9", pitot9.Voltage);
-    printProtocolled("pt10", pitot10.Voltage);
-    printProtocolled("pt11", pitot11.Voltage);
-  }
-  if (numPitotBoards >= 4){
-    printProtocolled("pt12", pitot12.Voltage);
-    printProtocolled("pt13", pitot13.Voltage);
-    printProtocolled("pt14", pitot14.Voltage);
-    printProtocolled("pt15", pitot15.Voltage);
-  }
-
-  printProtocolled("prs", barometer.pressure);
-  printProtocolled("tmp", barometer.temperature);
-
-  printProtocolled("acx", accgyro.ax_f);
-  printProtocolled("acy", accgyro.ay_f);
-  printProtocolled("acz", accgyro.az_f);
-  printProtocolled("gyx", accgyro.gx_f);
-  printProtocolled("gyy", accgyro.gy_f);
-  printProtocolled("gyz", accgyro.gz_f);
-
-  printChecksum("cks", checksum);
-
-  Serial.println("@");
 }
 
 void printChecksum(String apelido, float value){
