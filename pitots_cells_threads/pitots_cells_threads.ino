@@ -70,13 +70,13 @@ public:
   void run(){
     accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 
-    ax_f = ax/1670.0; 
-    ay_f = ay/1670.0; 
+    ax_f = ax/1670.0;
+    ay_f = ay/1670.0;
     az_f = az/1670.0;
     gx_f = gx/262.0;
     gy_f = gy/262.0;
     gz_f = gz/262.0;
-    
+
     runned();
   }
 };
@@ -96,7 +96,7 @@ public:
   void run(){
     pressure = baro.getPressure() / 1000.0;
     temperature = baro.getTemperature() / 100.0;
-    
+
     runned();
   }
 };
@@ -376,7 +376,7 @@ void loop(){
 
   if (print_time) {
     Serial.println(1000.0 / (millis() - previousTime));
-    previousTime = millis(); 
+    previousTime = millis();
   }
 }
 
